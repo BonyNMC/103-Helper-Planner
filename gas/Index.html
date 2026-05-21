@@ -1227,14 +1227,20 @@
                 <option value="PKG">Khu Vực PKG (Bao bì)</option>
                 <option value="SE">Khu Vực SE (Sachet/Đặc biệt)</option>
               </select>
-              <input type="text" class="form-control" id="filterMachine" placeholder="Lọc theo máy..." onkeyup="applyFilters()">
+              <div class="machine-tags-wrapper" style="position: relative; display: inline-block;">
+                <input type="text" class="form-control" id="filterMachine" placeholder="🔍 Lọc theo máy..." onfocus="showMachineSuggestions()" oninput="showMachineSuggestions()" onkeydown="handleMachineKey(event)" style="width: 140px;">
+                <div id="machineSuggestions" class="pcode-suggestions-dropdown"></div>
+              </div>
               <select class="form-control" id="filterShift" onchange="applyFilters()">
                 <option value="">Tất Cả Ca</option>
                 <option value="1">Ca 1 (5:55 - 13:55)</option>
                 <option value="2">Ca 2 (13:55 - 21:55)</option>
                 <option value="3">Ca 3 (21:55 - 5:55)</option>
               </select>
-              <input type="text" class="form-control" id="filterSearch" placeholder="Tìm kiếm SKU hoặc Tên..." onkeyup="applyFilters()">
+              <div class="sku-tags-wrapper" style="position: relative; display: inline-block;">
+                <input type="text" class="form-control" id="filterSearch" placeholder="🔍 Tìm kiếm SKU..." onfocus="showSKUSuggestions()" oninput="showSKUSuggestions()" onkeydown="handleSKUKey(event)" style="width: 150px;">
+                <div id="skuSuggestions" class="pcode-suggestions-dropdown"></div>
+              </div>
               <div class="pcode-tags-wrapper" style="position: relative; display: inline-block;">
                 <input type="text" class="form-control" id="filterPCode" placeholder="🔍 Lọc mã vật tư P..." onfocus="showPCodeSuggestions()" oninput="showPCodeSuggestions()" onkeydown="handlePCodeKey(event)" style="width: 150px;">
                 <div id="pcodeSuggestions" class="pcode-suggestions-dropdown"></div>
@@ -1247,7 +1253,11 @@
               <span>+</span> Thêm Kế Hoạch Ad-hoc
             </button>
           </div>
-          <div id="pcodeActiveTags" class="pcode-active-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0;"></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 4px; padding: 2px 0;">
+            <div id="pcodeActiveTags" class="pcode-active-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+            <div id="machineActiveTags" class="pcode-active-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+            <div id="skuActiveTags" class="pcode-active-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+          </div>
         </div>
         
         <div class="table-wrapper">
@@ -1575,6 +1585,8 @@
       selectedMaterialCodes: [],
       filteredPlansBeforeMaterialFilter: [],
       selectedPCodes: [], // Holds array of active selected P-code filter tags
+      selectedMachines: [], // Holds array of active selected machine filter tags
+      selectedSKUs: [], // Holds array of active selected SKU filter tags
       hasBomAdjustPrivilege: false, // Permission check result
       userEmail: '', // Active session email
       filters: {
@@ -1777,8 +1789,12 @@
       state.filters.search = '';
       state.filters.pcode = '';
       state.selectedPCodes = [];
+      state.selectedMachines = [];
+      state.selectedSKUs = [];
       
       renderPCodeTags();
+      renderMachineTags();
+      renderSKUTags();
       applyFilters();
     }
 
@@ -1804,15 +1820,32 @@
         if (state.filters.area && plan.area !== state.filters.area) return false;
         if (state.filters.shift && plan.shift.toString() !== state.filters.shift) return false;
         
-        if (state.filters.machine) {
-          const match = plan.machine && plan.machine.toLowerCase().includes(state.filters.machine);
-          if (!match) return false;
+        // Machine (Lọc theo máy): Match if selectedMachines has items AND plan.machine is in it, OR matching typed search if no selectedMachines
+        if (state.selectedMachines.length > 0 || state.filters.machine) {
+          let matchTags = true;
+          if (state.selectedMachines.length > 0) {
+            matchTags = plan.machine && state.selectedMachines.includes(plan.machine.toUpperCase().trim());
+          }
+          let matchTyped = true;
+          if (state.filters.machine) {
+            matchTyped = plan.machine && plan.machine.toLowerCase().includes(state.filters.machine);
+          }
+          if (!matchTags || !matchTyped) return false;
         }
         
-        if (state.filters.search) {
-          const matchSku = plan.sku && plan.sku.toLowerCase().includes(state.filters.search);
-          const matchDesc = plan.desc && plan.desc.toLowerCase().includes(state.filters.search);
-          if (!matchSku && !matchDesc) return false;
+        // SKU Search (Lọc theo SKU): Match if selectedSKUs has items AND plan.sku is in it, OR matching typed search if no selectedSKUs
+        if (state.selectedSKUs.length > 0 || state.filters.search) {
+          let matchTags = true;
+          if (state.selectedSKUs.length > 0) {
+            matchTags = plan.sku && state.selectedSKUs.includes(plan.sku.toUpperCase().trim());
+          }
+          let matchTyped = true;
+          if (state.filters.search) {
+            const matchSku = plan.sku && plan.sku.toLowerCase().includes(state.filters.search);
+            const matchDesc = plan.desc && plan.desc.toLowerCase().includes(state.filters.search);
+            matchTyped = matchSku || matchDesc;
+          }
+          if (!matchTags || !matchTyped) return false;
         }
         
         // P-Code Global Filter (Multiple Choice tags OR live typed input)
@@ -1890,9 +1923,19 @@
     }
     
     document.addEventListener('click', function(e) {
-      const wrapper = document.querySelector('.pcode-tags-wrapper');
-      if (wrapper && !wrapper.contains(e.target)) {
+      const pWrapper = document.querySelector('.pcode-tags-wrapper');
+      if (pWrapper && !pWrapper.contains(e.target)) {
         const drop = document.getElementById('pcodeSuggestions');
+        if (drop) drop.style.display = 'none';
+      }
+      const mWrapper = document.querySelector('.machine-tags-wrapper');
+      if (mWrapper && !mWrapper.contains(e.target)) {
+        const drop = document.getElementById('machineSuggestions');
+        if (drop) drop.style.display = 'none';
+      }
+      const sWrapper = document.querySelector('.sku-tags-wrapper');
+      if (sWrapper && !sWrapper.contains(e.target)) {
+        const drop = document.getElementById('skuSuggestions');
         if (drop) drop.style.display = 'none';
       }
     });
@@ -1948,6 +1991,163 @@
         removePCodeTag(pCode);
       } else {
         addPCodeTag(pCode);
+      }
+    }
+
+    // Machine Autocomplete & Search Tags Engine
+    function showMachineSuggestions() {
+      const input = document.getElementById('filterMachine');
+      const query = input.value.trim().toUpperCase();
+      const dropdown = document.getElementById('machineSuggestions');
+      
+      const machines = new Set();
+      state.plans.forEach(plan => {
+        if (plan.machine) {
+          machines.add(plan.machine.trim().toUpperCase());
+        }
+      });
+      
+      const uniqueMachines = Array.from(machines).sort();
+      
+      const filtered = uniqueMachines.filter(m => {
+        if (state.selectedMachines.includes(m)) return false;
+        return m.includes(query);
+      });
+      
+      if (filtered.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      dropdown.innerHTML = filtered.map(m => `
+        <div class="pcode-suggestion-item" onclick="addMachineTag('${m}')">
+          <span style="font-weight: 600; color: var(--primary);">${m}</span>
+        </div>
+      `).join('');
+      dropdown.style.display = 'block';
+    }
+
+    function addMachineTag(m) {
+      m = m.trim().toUpperCase();
+      if (m && !state.selectedMachines.includes(m)) {
+        state.selectedMachines.push(m);
+      }
+      const input = document.getElementById('filterMachine');
+      if (input) input.value = '';
+      const drop = document.getElementById('machineSuggestions');
+      if (drop) drop.style.display = 'none';
+      renderMachineTags();
+      applyFilters();
+    }
+    
+    function removeMachineTag(m) {
+      state.selectedMachines = state.selectedMachines.filter(x => x !== m);
+      renderMachineTags();
+      applyFilters();
+    }
+    
+    function renderMachineTags() {
+      const container = document.getElementById('machineActiveTags');
+      if (!container) return;
+      if (state.selectedMachines.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = state.selectedMachines.map(m => `
+        <div class="pcode-tag-pill" style="background: rgba(79, 70, 229, 0.12); color: var(--primary); border: 1px solid rgba(79, 70, 229, 0.3);">
+          <span>📟 ${m}</span>
+          <span class="remove-btn" onclick="removeMachineTag('${m}')">&times;</span>
+        </div>
+      `).join('');
+    }
+    
+    function handleMachineKey(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById('filterMachine');
+        const val = input.value.trim().toUpperCase();
+        if (val) {
+          addMachineTag(val);
+        }
+      }
+    }
+
+    // SKU Autocomplete & Search Tags Engine
+    function showSKUSuggestions() {
+      const input = document.getElementById('filterSearch');
+      const query = input.value.trim().toUpperCase();
+      const dropdown = document.getElementById('skuSuggestions');
+      
+      const skuMap = {};
+      state.plans.forEach(plan => {
+        if (plan.sku) {
+          skuMap[plan.sku.trim().toUpperCase()] = plan.desc || '';
+        }
+      });
+      
+      const uniqueSKUs = Object.keys(skuMap).sort();
+      
+      const filtered = uniqueSKUs.filter(sku => {
+        if (state.selectedSKUs.includes(sku)) return false;
+        return sku.includes(query) || skuMap[sku].toUpperCase().includes(query);
+      });
+      
+      if (filtered.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      dropdown.innerHTML = filtered.map(sku => `
+        <div class="pcode-suggestion-item" onclick="addSKUTag('${sku}')">
+          <span style="font-weight: 600; color: var(--success);">${sku}</span>
+          <span class="desc" style="max-width: 140px;">${skuMap[sku]}</span>
+        </div>
+      `).join('');
+      dropdown.style.display = 'block';
+    }
+
+    function addSKUTag(sku) {
+      sku = sku.trim().toUpperCase();
+      if (sku && !state.selectedSKUs.includes(sku)) {
+        state.selectedSKUs.push(sku);
+      }
+      const input = document.getElementById('filterSearch');
+      if (input) input.value = '';
+      const drop = document.getElementById('skuSuggestions');
+      if (drop) drop.style.display = 'none';
+      renderSKUTags();
+      applyFilters();
+    }
+    
+    function removeSKUTag(sku) {
+      state.selectedSKUs = state.selectedSKUs.filter(x => x !== sku);
+      renderSKUTags();
+      applyFilters();
+    }
+    
+    function renderSKUTags() {
+      const container = document.getElementById('skuActiveTags');
+      if (!container) return;
+      if (state.selectedSKUs.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = state.selectedSKUs.map(sku => `
+        <div class="pcode-tag-pill" style="background: rgba(16, 185, 129, 0.12); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+          <span>📦 ${sku}</span>
+          <span class="remove-btn" onclick="removeSKUTag('${sku}')">&times;</span>
+        </div>
+      `).join('');
+    }
+    
+    function handleSKUKey(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById('filterSearch');
+        const val = input.value.trim().toUpperCase();
+        if (val) {
+          addSKUTag(val);
+        }
       }
     }
 
