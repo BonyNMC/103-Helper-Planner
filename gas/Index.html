@@ -1475,18 +1475,20 @@
             <option value="SE">SE (Sachet/Đặc biệt)</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="position: relative;">
           <label for="adhocSku">Mã Thành Phẩm / SKU</label>
-          <input type="text" class="form-control" id="adhocSku" placeholder="Ví dụ: C0000002130" required>
+          <input type="text" class="form-control" id="adhocSku" placeholder="🔍 Tìm kiếm mã hoặc tên SKU..." onfocus="showAdhocSKUSuggestions()" oninput="showAdhocSKUSuggestions()" required autocomplete="off">
+          <div id="adhocSkuSuggestions" class="pcode-suggestions-dropdown" style="width: 100%;"></div>
         </div>
         <div class="form-group">
           <label for="adhocDesc">Tên Thành Phẩm / SKU</label>
           <input type="text" class="form-control" id="adhocDesc" placeholder="Ví dụ: CC 21 FHM WT/GN TB+CAP18" required>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div class="form-group">
+          <div class="form-group" style="position: relative;">
             <label for="adhocMachine">Máy</label>
-            <input type="text" class="form-control" id="adhocMachine" placeholder="Ví dụ: EN1702">
+            <input type="text" class="form-control" id="adhocMachine" placeholder="🔍 Chọn máy..." onfocus="showAdhocMachineSuggestions()" oninput="showAdhocMachineSuggestions()" autocomplete="off">
+            <div id="adhocMachineSuggestions" class="pcode-suggestions-dropdown" style="width: 100%;"></div>
           </div>
           <div class="form-group">
             <label for="adhocShift">Ca</label>
@@ -1938,7 +1940,100 @@
         const drop = document.getElementById('skuSuggestions');
         if (drop) drop.style.display = 'none';
       }
+      // Ad-hoc Modal SKU input click-outside close
+      const aSku = document.getElementById('adhocSku');
+      if (aSku) {
+        const aSkuWrapper = aSku.parentElement;
+        if (aSkuWrapper && !aSkuWrapper.contains(e.target)) {
+          const drop = document.getElementById('adhocSkuSuggestions');
+          if (drop) drop.style.display = 'none';
+        }
+      }
+      // Ad-hoc Modal Machine input click-outside close
+      const aMach = document.getElementById('adhocMachine');
+      if (aMach) {
+        const aMachWrapper = aMach.parentElement;
+        if (aMachWrapper && !aMachWrapper.contains(e.target)) {
+          const drop = document.getElementById('adhocMachineSuggestions');
+          if (drop) drop.style.display = 'none';
+        }
+      }
     });
+    
+    // Ad-hoc Modal Autocomplete Suggestions Engine
+    function showAdhocSKUSuggestions() {
+      const input = document.getElementById('adhocSku');
+      const query = input.value.trim().toUpperCase();
+      const dropdown = document.getElementById('adhocSkuSuggestions');
+      
+      const skuMap = {};
+      state.plans.forEach(plan => {
+        if (plan.sku) {
+          skuMap[plan.sku.trim().toUpperCase()] = plan.desc || '';
+        }
+      });
+      
+      const uniqueSKUs = Object.keys(skuMap).sort();
+      
+      const filtered = uniqueSKUs.filter(sku => {
+        return sku.includes(query) || skuMap[sku].toUpperCase().includes(query);
+      });
+      
+      if (filtered.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      dropdown.innerHTML = filtered.map(sku => `
+        <div class="pcode-suggestion-item" onclick="selectAdhocSKU('${sku}', \`${skuMap[sku].replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)">
+          <span style="font-weight: 600; color: var(--success);">${sku}</span>
+          <span class="desc" style="max-width: 200px;">${skuMap[sku]}</span>
+        </div>
+      `).join('');
+      dropdown.style.display = 'block';
+    }
+    
+    function selectAdhocSKU(sku, desc) {
+      document.getElementById('adhocSku').value = sku;
+      document.getElementById('adhocDesc').value = desc;
+      document.getElementById('adhocSkuSuggestions').style.display = 'none';
+    }
+    
+    function showAdhocMachineSuggestions() {
+      const input = document.getElementById('adhocMachine');
+      const query = input.value.trim().toUpperCase();
+      const dropdown = document.getElementById('adhocMachineSuggestions');
+      
+      const machines = new Set();
+      state.plans.forEach(plan => {
+        if (plan.machine) {
+          machines.add(plan.machine.trim().toUpperCase());
+        }
+      });
+      
+      const uniqueMachines = Array.from(machines).sort();
+      
+      const filtered = uniqueMachines.filter(m => {
+        return m.includes(query);
+      });
+      
+      if (filtered.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      dropdown.innerHTML = filtered.map(m => `
+        <div class="pcode-suggestion-item" onclick="selectAdhocMachine('${m}')">
+          <span style="font-weight: 600; color: var(--primary);">${m}</span>
+        </div>
+      `).join('');
+      dropdown.style.display = 'block';
+    }
+    
+    function selectAdhocMachine(m) {
+      document.getElementById('adhocMachine').value = m;
+      document.getElementById('adhocMachineSuggestions').style.display = 'none';
+    }
     
     function addPCodeTag(code) {
       code = code.trim().toUpperCase();
@@ -2634,6 +2729,8 @@
     function closeAdhocModal() {
       document.getElementById('adhocModal').classList.remove('show');
       document.getElementById('adhocForm').reset();
+      document.getElementById('adhocSkuSuggestions').style.display = 'none';
+      document.getElementById('adhocMachineSuggestions').style.display = 'none';
     }
     
     function submitAdhocRow(e) {
