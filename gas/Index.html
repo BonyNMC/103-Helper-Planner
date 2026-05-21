@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <title>Helper Planner 🚀</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Premium Glassmorphism & Brutalist Dark Theme Stylesheet */
+    :root {
+      /* Premium Light Theme (Default) */
+      --bg-gradient: radial-gradient(circle at top, #f8fafc 0%, #e2e8f0 100%);
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-glow: rgba(79, 70, 229, 0.15);
+      --success: #059669;
+      --success-glow: rgba(5, 150, 105, 0.15);
+      --accent: #d97706;
+      --accent-glow: rgba(217, 119, 6, 0.15);
+      --danger: #dc2626;
+      
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-bg-hover: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(0, 0, 0, 0.12);
+      --glass-border-focus: rgba(79, 70, 229, 0.4);
+      
+      --text-main: #0f172a;
+      --text-muted: #1e293b;
+      --text-dark: #334155;
+      
+      --shadow-indigo: 0 8px 32px 0 rgba(79, 70, 229, 0.08);
+      --shadow-glass: 0 8px 32px 0 rgba(15, 23, 42, 0.05);
+      
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      --nav-bg: rgba(226, 232, 240, 0.8);
+      --badge-color: #4f46e5;
+      --badge-bg: rgba(79, 70, 229, 0.1);
+      
+      --input-bg: #ffffff;
+      --table-wrapper-bg: #ffffff;
+      --th-bg: #cbd5e1;
+      --td-border: rgba(0, 0, 0, 0.08);
+      --text-hover-color: #0f172a;
+      
+      --dashed-border: rgba(0, 0, 0, 0.3);
+      --card-bg: rgba(0, 0, 0, 0.04);
+      --timeline-dot-border: #f8fafc;
+      --modal-bg: #ffffff;
+      --toast-bg: #1e293b;
+      --toast-color: #ffffff;
+
+      /* High-contrast Theme-aware Badges & Accent Variables */
+      --badge-pkg-text: #1e1b4b;
+      --badge-pkg-bg: #e0e7ff;
+      --badge-pkg-border: #c7d2fe;
+      --badge-se-text: #022c22;
+      --badge-se-bg: #d1fae5;
+      --badge-se-border: #a7f3d0;
+      --badge-adhoc-text: #500724;
+      --badge-adhoc-bg: #fce7f3;
+      --badge-adhoc-border: #fbcfe8;
+      --mat-code-color: #3730a3;
+      --mat-uom-bg: #e2e8f0;
+      --mat-uom-text: #1e293b;
+      --mat-hover-bg: rgba(99, 102, 241, 0.06);
+      --adjust-btn-hover: #4338ca;
+      --timeline-dot-bg: #475569;
+    }
+    
+    .dark-theme {
+      /* Premium Dark Theme */
+      --bg-gradient: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.4);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
+      --accent: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.3);
+      --danger: #ef4444;
+      
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-bg-hover: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.07);
+      --glass-border-focus: rgba(99, 102, 241, 0.4);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #64748b;
+      
+      --shadow-indigo: 0 8px 32px 0 rgba(99, 102, 241, 0.15);
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      
+      --nav-bg: rgba(15, 23, 42, 0.6);
+      --badge-color: #c7d2fe;
+      --badge-bg: rgba(99, 102, 241, 0.4);
+      
+      --input-bg: rgba(15, 23, 42, 0.8);
+      --table-wrapper-bg: rgba(15, 23, 42, 0.4);
+      --th-bg: #0f172a;
+      --td-border: rgba(255, 255, 255, 0.04);
+      --text-hover-color: #ffffff;
+      
+      --dashed-border: rgba(255, 255, 255, 0.3);
+      --card-bg: rgba(255, 255, 255, 0.02);
+      --timeline-dot-border: #020617;
+      --modal-bg: rgba(15, 23, 42, 0.95);
+      --toast-bg: rgba(15, 23, 42, 0.95);
+      --toast-color: #ffffff;
+
+      /* High-contrast Theme-aware Badges & Accent Variables */
+      --badge-pkg-text: #c7d2fe;
+      --badge-pkg-bg: rgba(99, 102, 241, 0.15);
+      --badge-pkg-border: rgba(99, 102, 241, 0.3);
+      --badge-se-text: #6ee7b7;
+      --badge-se-bg: rgba(16, 185, 129, 0.15);
+      --badge-se-border: rgba(16, 185, 129, 0.3);
+      --badge-adhoc-text: #f472b6;
+      --badge-adhoc-bg: rgba(236, 72, 153, 0.15);
+      --badge-adhoc-border: rgba(236, 72, 153, 0.35);
+      --mat-code-color: #818cf8;
+      --mat-uom-bg: rgba(255, 255, 255, 0.05);
+      --mat-uom-text: #94a3b8;
+      --mat-hover-bg: rgba(255, 255, 255, 0.04);
+      --adjust-btn-hover: #818cf8;
+      --timeline-dot-bg: #64748b;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.6);
+    }
+    
+    /* Global Container */
+    .app-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-height: 100vh;
+    }
+    
+    /* Glassmorphic Panel Base */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-glass);
+      transition: var(--transition-smooth);
+    }
+    
+    /* Header Styles */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+    }
+    
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-area h1 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    
+    .logo-area span.badge {
+      background: var(--badge-bg);
+      color: var(--badge-color);
+      border: 1px solid var(--primary-glow);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+    
+    .nav-tabs {
+      display: flex;
+      background: var(--nav-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+    
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      transition: var(--transition-smooth);
+    }
+    
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    
+    .tab-btn.active {
+      color: var(--text-main);
+      background: var(--primary);
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+    
+    /* Top KPI Dashboard Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    
+    .kpi-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+    
+    .kpi-card.pkg::before { background: var(--primary); }
+    .kpi-card.se::before { background: var(--success); }
+    .kpi-card.adhoc::before { background: var(--accent); }
+    .kpi-card.sku::before { background: #ec4899; }
+    
+    .kpi-info h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    
+    .kpi-info p.val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    
+    .kpi-icon {
+      font-size: 32px;
+      opacity: 0.2;
+    }
+    
+    /* Main Content Layout */
+    .content-body {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      align-items: start;
+    }
+    
+    /* Left Grid Panel (Spreadsheet layout) */
+    .grid-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .form-control {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+    
+    select.form-control {
+      cursor: pointer;
+      padding-right: 28px;
+    }
+    
+    .btn {
+      background: var(--primary);
+      color: var(--text-main);
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+    
+    .btn:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transform: translateY(-1px);
+    }
+    
+    .btn.btn-success {
+      background: var(--success);
+    }
+    .btn.btn-success:hover {
+      background: #059669;
+      box-shadow: 0 4px 14px var(--success-glow);
+    }
+    
+    .btn.btn-secondary {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+    }
+    .btn.btn-secondary:hover {
+      background: var(--glass-bg-hover);
+    }
+    
+    /* Spreadsheet Grid Styles */
+    .table-wrapper {
+      max-height: 600px;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: var(--table-wrapper-bg);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    
+    th {
+      background: var(--th-bg);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--td-border);
+      color: var(--text-main);
+      font-size: 13px;
+      transition: var(--transition-smooth);
+    }
+    
+    tr {
+      cursor: pointer;
+    }
+    
+    tr:hover td {
+      background: rgba(99, 102, 241, 0.04);
+      color: var(--text-hover-color);
+    }
+    
+    tr.selected td {
+      background: rgba(99, 102, 241, 0.09);
+      border-bottom-color: rgba(99, 102, 241, 0.2);
+    }
+    
+    .badge-area {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-area.pkg {
+      background: var(--badge-pkg-bg);
+      color: var(--badge-pkg-text);
+      border: 1px solid var(--badge-pkg-border);
+    }
+    .badge-area.se {
+      background: var(--badge-se-bg);
+      color: var(--badge-se-text);
+      border: 1px solid var(--badge-se-border);
+    }
+    
+    .badge-source {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-source.sync {
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+    }
+    .badge-source.adhoc {
+      background: var(--badge-adhoc-bg);
+      color: var(--badge-adhoc-text);
+      border: 1px solid var(--badge-adhoc-border);
+    }
+    
+    /* Inline Editing Styling */
+    .editable-cell {
+      position: relative;
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 1px dashed var(--dashed-border);
+      cursor: dblclick;
+      width: fit-content;
+    }
+    
+    .inline-edit-input {
+      width: 90px;
+      background: var(--input-bg);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 4px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+    
+    /* Live Material Panel (Right Side) */
+    .drawer-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 24px;
+    }
+    
+    .drawer-header {
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    
+    .drawer-header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    
+    .drawer-header p.sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    .materials-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    
+    .material-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+    
+    .material-card:hover {
+      background: var(--mat-hover-bg);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+    
+    .mat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .mat-code {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--mat-code-color);
+      font-size: 13px;
+    }
+    
+    .mat-uom {
+      background: var(--mat-uom-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: var(--mat-uom-text);
+      font-weight: 600;
+    }
+    
+    .mat-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .mat-calc {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      border-top: 1px dashed var(--glass-border);
+      padding-top: 8px;
+    }
+    
+    .mat-ratio {
+      font-size: 11px;
+      color: var(--text-dark);
+    }
+    
+    .mat-ratio span.override-indicator {
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    
+    .mat-qty {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .mat-qty.overridden {
+      color: var(--accent);
+    }
+    
+    .adjust-bom-btn {
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      align-self: flex-end;
+      margin-top: 4px;
+      transition: var(--transition-smooth);
+    }
+    
+    .adjust-bom-btn:hover {
+      color: var(--adjust-btn-hover);
+      text-decoration: underline;
+    }
+    
+    /* Tabs Panel View Toggle */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Audit Log Timeline Styling */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      padding-left: 20px;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--glass-border);
+    }
+    
+    .timeline-item {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50px;
+      background: var(--text-dark);
+      border: 2px solid var(--timeline-dot-border);
+    }
+    
+    .timeline-item.plan_output::before {
+      background: var(--primary);
+    }
+    
+    .timeline-item.bom_adjustment::before {
+      background: var(--accent);
+    }
+    
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    
+    .timeline-desc {
+      color: var(--text-main);
+      font-size: 13px;
+    }
+    
+    /* Modals & Dialog Popups */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 6, 17, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition-smooth);
+    }
+    
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-card {
+      background: var(--modal-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      transform: scale(0.9);
+      transition: var(--transition-smooth);
+    }
+    
+    .modal-backdrop.show .modal-card {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+    }
+    
+    .modal-header h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    .modal-close:hover {
+      color: var(--text-main);
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+      border-top: 1px solid var(--glass-border);
+      padding-top: 16px;
+    }
+    
+    /* Loading overlay */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 6, 17, 0.85);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition-smooth);
+    }
+    
+    .loader-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--glass-border);
+      border-top: 4px solid var(--primary);
+      border-radius: 50px;
+      animation: spin 1s linear infinite;
+    }
+    
+    .spinner-sm {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top: 2px solid #fff;
+      border-radius: 50px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+    
+    /* Toast alerts */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+    }
+    
+    .toast {
+      background: var(--toast-bg);
+      border: 1px solid var(--glass-border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: var(--toast-color);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: slideUp 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+    
+    .toast.error {
+      border-left: 4px solid var(--danger);
+    }
+    
+    /* Empty State */
+    .empty-state {
+      padding: 40px;
+      text-align: center;
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .empty-icon {
+      font-size: 40px;
+      opacity: 0.3;
+    }
+    
+    /* Animations */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideUp {
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes marquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
+    }
+    .marquee-container {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .marquee-content {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 25s linear infinite;
+    }
+    .p-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      transition: all 0.25s ease;
+      min-width: 110px;
+    }
+    .p-cell:hover {
+      background: var(--mat-hover-bg);
+      border-color: rgba(99, 102, 241, 0.25);
+      transform: translateY(-1px);
+    }
+    .p-code {
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 11.5px;
+      color: var(--text-main);
+      letter-spacing: 0.2px;
+    }
+    .p-qty {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--success);
+      margin-top: 3px;
+    }
+    .p-cell-highlight {
+      background: rgba(245, 158, 11, 0.15) !important;
+      border: 1px solid rgba(245, 158, 11, 0.4) !important;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+    }
+    tr.row-adhoc {
+      background: rgba(236, 72, 153, 0.08) !important;
+      border-left: 3px solid #ec4899 !important;
+    }
+    tr.row-adhoc:hover {
+      background: rgba(236, 72, 153, 0.12) !important;
+    }
+    .p-cell-highlight .p-code {
+      color: var(--accent) !important;
+    }
+    .p-cell-highlight .p-qty {
+      color: var(--accent) !important;
+    }
+ 
+    .btn-delete-adhoc {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+      color: var(--danger);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .btn-delete-adhoc:hover {
+      background: var(--danger);
+      color: #ffffff !important;
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+    }
+ 
+    .dispatch-machine-badge {
+      white-space: nowrap;
+      background: var(--badge-pkg-bg);
+      border: 1px solid var(--badge-pkg-border);
+      color: var(--badge-pkg-text);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .dispatch-machine-badge:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-1px);
+    }
+ 
+    /* P-code Suggestion & Multiple-choice Tag Widget Styles */
+    .pcode-suggestions-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 250px;
+      max-height: 250px;
+      overflow-y: auto;
+      background: var(--modal-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      box-shadow: var(--shadow-glass);
+      z-index: 9999;
+      display: none;
+    }
+    
+    .pcode-suggestion-item {
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s;
+    }
+    
+    .pcode-suggestion-item:hover {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--primary);
+    }
+    
+    .pcode-suggestion-item .desc {
+      font-size: 11px;
+      color: var(--text-dark);
+      margin-left: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px;
+    }
+    
+    .pcode-active-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px 0;
+    }
+    
+    .pcode-tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .pcode-tag-pill:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.5);
+    }
+    
+    .pcode-tag-pill .remove-btn {
+      cursor: pointer;
+      color: var(--text-dark);
+      font-weight: 700;
+      transition: color 0.15s;
+    }
+    
+    .pcode-tag-pill .remove-btn:hover {
+      color: #ef4444;
+    }
+
+    /* P-code Highlight in grid cell */
+    .p-cell-highlight {
+      background: rgba(245, 158, 11, 0.15) !important;
+      border: 1px solid rgba(245, 158, 11, 0.4) !important;
+      border-radius: 4px !important;
+      color: var(--accent) !important;
+      font-weight: bold !important;
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 2px rgba(245, 158, 11, 0.2); }
+      50% { box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
+      100% { box-shadow: 0 0 2px rgba(245, 158, 11, 0.2); }
+    }
+    
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #tabDispatch, #tabDispatch * {
+        visibility: visible !important;
+      }
+      #tabDispatch {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        color: black !important;
+      }
+      #tabDispatch .glass-panel {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: black !important;
+      }
+      #tabDispatch h2, #tabDispatch p, #tabDispatch th, #tabDispatch td, #tabDispatch span, #tabDispatch strong {
+        color: black !important;
+      }
+      #tabDispatch table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+      }
+      #tabDispatch th, #tabDispatch td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+      }
+      #tabDispatch .btn {
+        display: none !important;
+      }
+      #tabDispatch .dispatch-machine-badge {
+        background: transparent !important;
+        border: 1px solid #000 !important;
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loader-overlay show">
+    <div class="spinner"></div>
+    <p style="font-weight: 600; letter-spacing: 0.5px;" id="loadingText">Loading Helper Planner...</p>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="glass-panel">
+      <div class="logo-area">
+        <h1>Helper Planner 🚀</h1>
+        <span class="badge" id="globalVersionBadge">BOM V_1.0.0</span>
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; margin-left: 12px; border: 1px solid var(--glass-border); border-radius: 8px;">
+          🌙 Chế độ tối
+        </button>
+      </div>
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('plans')">Kế Hoạch Sản Xuất</button>
+        <button class="tab-btn" onclick="switchTab('dispatch')">Tổng Hợp Lãnh &amp; Cấp Vật Tư 🚚</button>
+        <button class="tab-btn" onclick="switchTab('audit')">Nhật Ký Thay Đổi</button>
+        <button class="tab-btn" onclick="switchTab('settings')">Đồng Bộ Hệ Thống</button>
+        <button class="tab-btn" onclick="switchTab('guide')">Hướng Dẫn Sử Dụng 📖</button>
+      </div>
+    </header>
+    
+    <!-- KPI Dashboard Cards -->
+    <div class="kpi-grid">
+      <div class="glass-panel kpi-card pkg">
+        <div class="kpi-info">
+          <h3>Tổng Sản Lượng PKG</h3>
+          <p class="val" id="kpiPkgTotal">0 CS</p>
+        </div>
+        <div class="kpi-icon">📦</div>
+      </div>
+      <div class="glass-panel kpi-card se">
+        <div class="kpi-info">
+          <h3>Tổng Sản Lượng SE</h3>
+          <p class="val" id="kpiSeTotal">0 CS</p>
+        </div>
+        <div class="kpi-icon">⚙️</div>
+      </div>
+      <div class="glass-panel kpi-card adhoc">
+        <div class="kpi-info">
+          <h3>Số Dòng Ad-hoc</h3>
+          <p class="val" id="kpiAdhocCount">0</p>
+        </div>
+        <div class="kpi-icon">➕</div>
+      </div>
+      <div class="glass-panel kpi-card sku">
+        <div class="kpi-info">
+          <h3>Số SKU Hoạt Động</h3>
+          <p class="val" id="kpiSkuCount">0</p>
+        </div>
+        <div class="kpi-icon">🏷️</div>
+      </div>
+    </div>
+    
+    <!-- Tab 1: Plans & BOM Materials -->
+    <div id="tabPlans" class="tab-content active content-body">
+      
+      <!-- Audit Activity Ticker Bar -->
+      <div id="latestAuditTicker" class="glass-panel" style="margin-bottom: 15px; padding: 10px 16px; display: none; align-items: center; gap: 10px; background: var(--nav-bg); border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-glass);">
+        <span style="font-size: 12px; color: var(--primary); font-weight: 700; white-space: nowrap; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px;">
+          <span>⚡</span> HOẠT ĐỘNG MỚI NHẤT:
+        </span>
+        <div class="marquee-container" style="flex-grow: 1;">
+          <div id="latestAuditMarquee" class="marquee-content" style="font-size: 13px; color: var(--text-main); font-weight: 600;"></div>
+        </div>
+      </div>
+      
+      <!-- Left Panel: Grid -->
+      <div class="glass-panel grid-container">
+        <div class="toolbar" style="flex-direction: column; align-items: stretch; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div class="filters">
+              <input type="date" class="form-control" id="filterDate" onchange="applyFilters()">
+              <select class="form-control" id="filterArea" onchange="applyFilters()">
+                <option value="">Tất Cả Khu Vực</option>
+                <option value="PKG">Khu Vực PKG (Bao bì)</option>
+                <option value="SE">Khu Vực SE (Sachet/Đặc biệt)</option>
+              </select>
+              <input type="text" class="form-control" id="filterMachine" placeholder="Lọc theo máy..." onkeyup="applyFilters()">
+              <select class="form-control" id="filterShift" onchange="applyFilters()">
+                <option value="">Tất Cả Ca</option>
+                <option value="1">Ca 1 (5:55 - 13:55)</option>
+                <option value="2">Ca 2 (13:55 - 21:55)</option>
+                <option value="3">Ca 3 (21:55 - 5:55)</option>
+              </select>
+              <input type="text" class="form-control" id="filterSearch" placeholder="Tìm kiếm SKU hoặc Tên..." onkeyup="applyFilters()">
+              <div class="pcode-tags-wrapper" style="position: relative; display: inline-block;">
+                <input type="text" class="form-control" id="filterPCode" placeholder="🔍 Lọc mã vật tư P..." onfocus="showPCodeSuggestions()" oninput="showPCodeSuggestions()" onkeydown="handlePCodeKey(event)" style="width: 150px;">
+                <div id="pcodeSuggestions" class="pcode-suggestions-dropdown"></div>
+              </div>
+              <button class="btn btn-secondary" onclick="clearAllFilters()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--glass-border); border-radius: 8px;">
+                🧹 Xóa Bộ Lọc
+              </button>
+            </div>
+            <button class="btn btn-success" onclick="openAdhocModal()">
+              <span>+</span> Thêm Kế Hoạch Ad-hoc
+            </button>
+          </div>
+          <div id="pcodeActiveTags" class="pcode-active-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0;"></div>
+        </div>
+        
+        <div class="table-wrapper">
+          <table id="plansTable">
+            <thead>
+              <tr id="plansTableHeaderRow">
+                <!-- Dynamically built -->
+              </tr>
+            </thead>
+            <tbody id="plansTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Right Panel: Sticky Side Panel Stack -->
+      <div class="drawer-panel">
+        
+        <!-- Drawer Card 1: Single Selected SKU BOM Requirements -->
+        <div class="glass-panel" id="materialsPanel" style="width: 100%;">
+          <div class="drawer-header">
+            <h2>Packaging Requirements</h2>
+            <p class="sub" id="matPanelSubText">Select a production plan row to view dynamic material requirements scaled in real-time.</p>
+          </div>
+          
+          <div class="materials-list" id="materialsList">
+            <div class="empty-state">
+              <div class="empty-icon">🗂️</div>
+              <p>No row selected</p>
+            </div>
+          </div>
+        </div>
+        
+
+        
+      </div>
+      
+    </div>
+    
+    <!-- Tab 4: Helper Dispatch Overall Consolidated view -->
+    <div id="tabDispatch" class="tab-content">
+      <div class="glass-panel" style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 20px; color: var(--accent);">Bảng Tổng Hợp Lãnh &amp; Cấp Vật Tư 🚚</h2>
+            <p class="sub">Tổng hợp toàn bộ nguyên vật liệu bao bì cần lãnh từ kho và vị trí máy cần cấp cho ca sản xuất hiện tại.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-success" onclick="window.print()" style="background: var(--success); padding: 8px 16px; font-weight:600;">
+              🖨️ In Bảng Phân Bổ
+            </button>
+          </div>
+        </div>
+        
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">STT</th>
+                <th style="width: 140px;">Mã Vật Tư (Component)</th>
+                <th>Tên Vật Tư Bao Bì</th>
+                <th style="text-align: right; width: 160px;">Tổng Số Lượng Lãnh</th>
+                <th style="width: 80px; text-align: center;">Đơn Vị</th>
+                <th>Chi Tiết Phân Phối Cấp Máy (Machine Allocation)</th>
+              </tr>
+            </thead>
+            <tbody id="dispatchOverallTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab 2: Audit Logs -->
+    <div id="tabAudit" class="tab-content">
+      <div class="glass-panel" style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="drawer-header">
+          <h2>Nhật Ký Thay Đổi Hệ Thống</h2>
+          <p class="sub">Theo dõi thời gian thực tất cả các chỉnh sửa sản lượng, thêm kế hoạch ad-hoc và thay đổi định mức BOM.</p>
+        </div>
+        
+        <div class="timeline" id="auditTimeline">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab 3: About & Database Sync -->
+    <div id="tabSettings" class="tab-content">
+      <div class="glass-panel" style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+        <div class="drawer-header">
+          <h2>Đồng Bộ Hóa &amp; Khôi Phục Hệ Thống</h2>
+          <p class="sub">Đồng bộ dữ liệu kế hoạch sản xuất từ Planning input và định mức bao bì từ SAP ZMNU.</p>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <h4 style="font-weight: 600;">Kích Hoạt Nhập Dữ Liệu Thủ Công</h4>
+          <p style="color: var(--text-muted); font-size: 12px; line-height: 1.6;">
+            Nhấn vào nút bên dưới để tái tạo các bảng tính lưu trữ tạm thời (<code>HELPER_PLAN</code> &amp; <code>HELPER_BOM_MASTER</code>) bằng cách đọc dữ liệu thô từ các tab <strong>"Planning input"</strong> và <strong>"ZMNU"</strong>.
+            Hành động này sẽ tự động giữ lại toàn bộ các dòng kế hoạch ad-hoc và thay đổi sản lượng thủ công hiện có của bạn.
+          </p>
+          
+          <button class="btn" style="margin-top: 12px; width: fit-content;" onclick="triggerFullSync()">
+            🔄 Trigger Database Sync (Đồng bộ)
+          </button>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <h4 style="font-weight: 600;">Khôi Phục Toàn Bộ Định Mức Gốc</h4>
+          <p style="color: var(--text-muted); font-size: 12px; line-height: 1.6;">
+            Nhấp vào nút dưới đây để hoàn tác toàn bộ các hoạt động thay đổi mã vật tư và tỷ lệ định mức đóng gói đóng gói, khôi phục lại giá trị SAP ZMNU mặc định ban đầu trên toàn hệ thống.
+            Hành động này sẽ hủy kích hoạt mọi thay đổi, lưu lại nhật ký chỉnh sửa.
+          </p>
+          
+          <button class="btn btn-danger" style="margin-top: 12px; width: fit-content;" onclick="triggerResetAllOverrides()">
+            🚨 Khôi Phục Toàn Bộ Định Mức Gốc
+          </button>
+        </div>
+        
+        <div style="color: var(--text-dark); font-size: 11px; text-align: center;">
+          Helper Planner Engine • Built in partnership with Antigravity AI
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab 5: Hướng Dẫn Sử Dụng -->
+    <div id="tabGuide" class="tab-content">
+      <div class="glass-panel" style="max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; padding: 24px; color: var(--text-dark);">
+        <div class="drawer-header" style="border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
+          <h2 style="font-size: 24px; color: var(--accent); display: flex; align-items: center; gap: 10px;">
+            📖 Hướng Dẫn Sử Dụng Helper Planner
+          </h2>
+          <p class="sub">Tài liệu hướng dẫn quy trình vận hành và điều chỉnh vật tư bao bì dành cho ME, Planners và Helpers.</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Section 1 -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 18px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              🎯 1. Xem Kế Hoạch &amp; Phân Bổ Vật Tư
+            </h3>
+            <ul style="list-style-type: disc; margin-left: 20px; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li><strong>Bộ lọc thông minh:</strong> Hệ thống tự động nhận diện ngày hôm nay và ca làm việc hiện tại (Ca 1 từ 5:55-13:55, Ca 2 từ 13:55-21:55, Ca 3 còn lại). Có thể chọn bộ lọc theo máy hoặc tìm kiếm SKU.</li>
+              <li><strong>Lọc mã vật tư (Global Filter):</strong> Gõ mã vật tư bao bì (mã P) ở ô tìm kiếm hoặc nhấp trực tiếp vào mã P hiển thị trên bảng kế hoạch để lọc ngay lập tức. Giúp Helper biết mã vật tư đó cần được cấp cho những máy nào với số lượng bao nhiêu.</li>
+              <li><strong>Xem chi tiết:</strong> Nhấp vào một dòng kế hoạch bất kỳ để bảng <strong>"Nhu Cầu Vật Tư Đóng Gói"</strong> bên phải hiển thị danh sách các nguyên vật liệu đóng gói cần chuẩn bị (đã quy đổi theo sản lượng kế hoạch và tỷ lệ BOM).</li>
+            </ul>
+          </div>
+
+          <!-- Section 2 -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 18px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              ⚡ 2. Điều Chỉnh &amp; Thay Thế Định Mức (BOM Swap/Adjust)
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.6;">
+              Hỗ trợ thay thế mã vật tư tương đương hoặc điều chỉnh tỷ lệ thực tế (Chỉ dành cho tài khoản Admin được cấp quyền trong danh sách <code>HELPER_BOM_ACCESS</code>):
+            </p>
+            <ul style="list-style-type: disc; margin-left: 20px; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li><strong>Các bước thực hiện:</strong> Chọn dòng kế hoạch &rarr; Nhấp vào nút <strong>"Adjust"</strong> (Thay đổi) kế bên mã vật tư cần điều chỉnh ở bảng bên phải.</li>
+              <li><strong>Hẹn giờ kích hoạt (Mới):</strong> Nhập mã vật tư mới, tỷ lệ mới và chọn thời gian hẹn giờ hoạt động (Effective At). Định mức gốc vẫn sẽ giữ nguyên cho đến đúng giờ hẹn, hệ thống sẽ tự động kích hoạt định mức mới.</li>
+              <li><strong>Tự động tải lại (Live Load):</strong> Khi đến giờ hẹn, ứng dụng sẽ tự động tải lại dữ liệu ngầm mà không cần nhấn F5 (Tải lại trang), đảm bảo thông tin trên màn hình của Helpers luôn chính xác theo thời gian thực.</li>
+              <li><strong>Hủy bỏ thay đổi:</strong> Trong cửa sổ Adjust, Admin có thể ấn nút <strong>"Trở Về Định Mức Gốc"</strong> để hủy bỏ nhanh cho vật tư đó. Hoặc vào tab <strong>"Đồng Bộ Hệ Thống"</strong> và chọn <strong>"Khôi Phục Toàn Bộ Định Mức Gốc"</strong> để reset toàn bộ hệ thống về SAP ban đầu.</li>
+            </ul>
+          </div>
+
+          <!-- Section 3 -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 18px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--success); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              🚚 3. Tổng Hợp Lãnh &amp; Cấp Vật Tư (Dành Cho Helpers)
+            </h3>
+            <ul style="list-style-type: disc; margin-left: 20px; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li>Màn hình <strong>"Tổng Hợp Lãnh &amp; Cấp Vật Tư"</strong> gộp toàn bộ sản lượng bao bì cần lãnh từ kho theo ca đang chọn.</li>
+              <li><strong>In Bảng Phân Bổ:</strong> Nhấp nút <strong>"In Bảng Phân Bổ"</strong> để in trực tiếp hoặc lưu thành file PDF, phát cho nhân viên phụ trách lãnh/cấp vật tư xuống từng máy.</li>
+              <li>Dòng kế hoạch bổ sung thủ công (Ad-hoc Plan) được tô màu **Hồng Neon** nổi bật để Helper dễ nhận diện và cấp bổ sung.</li>
+            </ul>
+          </div>
+
+          <!-- Section 4 -->
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 18px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              🛡️ 4. Phân Quyền &amp; Đồng Bộ (Admin/Planner)
+            </h3>
+            <ul style="list-style-type: disc; margin-left: 20px; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li><strong>Phân quyền hoạt động:</strong> Mọi nhân viên đều có thể xem kế hoạch và thêm kế hoạch Ad-hoc. Chỉ nhân viên ME/Admin có trạng thái <code>ACTIVE</code> trong sheet <code>HELPER_BOM_ACCESS</code> mới có quyền thay thế định mức (Adjust BOM/Swap) và đồng bộ hệ thống.</li>
+              <li><strong>Đồng bộ dữ liệu:</strong> Nút <strong>"Trigger Database Sync"</strong> sẽ quét dữ liệu kế hoạch mới từ tab <strong>"Planning input"</strong> và định mức chuẩn từ tab <strong>"ZMNU"</strong> để cập nhật hệ thống, đồng thời giữ nguyên toàn bộ các thay đổi thủ công/ad-hoc hiện tại của bạn.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="text-align: center; border-top: 1px solid var(--glass-border); padding-top: 15px; font-size: 12px; color: var(--text-muted);">
+          Đội ngũ ME &amp; Antigravity AI • Vận Hành Sản Xuất Thông Minh 🚀
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- Ad-hoc Planning Row Modal -->
+  <div class="modal-backdrop" id="adhocModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Thêm Dòng Kế Hoạch Ad-hoc</h3>
+        <button class="modal-close" onclick="closeAdhocModal()">&times;</button>
+      </div>
+      <form id="adhocForm" onsubmit="submitAdhocRow(event)">
+        <div class="form-group">
+          <label for="adhocDate">Ngày Sản Xuất</label>
+          <input type="date" class="form-control" id="adhocDate" required>
+        </div>
+        <div class="form-group">
+          <label for="adhocArea">Khu Vực Vật Lý</label>
+          <select class="form-control" id="adhocArea" required>
+            <option value="PKG">PKG (Bao bì)</option>
+            <option value="SE">SE (Sachet/Đặc biệt)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="adhocSku">Mã Thành Phẩm / SKU</label>
+          <input type="text" class="form-control" id="adhocSku" placeholder="Ví dụ: C0000002130" required>
+        </div>
+        <div class="form-group">
+          <label for="adhocDesc">Tên Thành Phẩm / SKU</label>
+          <input type="text" class="form-control" id="adhocDesc" placeholder="Ví dụ: CC 21 FHM WT/GN TB+CAP18" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="adhocMachine">Máy</label>
+            <input type="text" class="form-control" id="adhocMachine" placeholder="Ví dụ: EN1702">
+          </div>
+          <div class="form-group">
+            <label for="adhocShift">Ca</label>
+            <select class="form-control" id="adhocShift">
+              <option value="1">Ca 1</option>
+              <option value="2">Ca 2</option>
+              <option value="3">Ca 3</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="adhocOutput">Sản Lượng (Thùng/CS)</label>
+          <input type="number" class="form-control" id="adhocOutput" placeholder="Ví dụ: 5000" min="0" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAdhocModal()">Hủy Bỏ</button>
+          <button type="submit" class="btn btn-success">Thêm Dòng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- BOM Override Adjustment Modal -->
+  <div class="modal-backdrop" id="bomModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Điều Chỉnh Định Mức Bao Bì (BOM)</h3>
+        <button class="modal-close" onclick="closeBomModal()">&times;</button>
+      </div>
+      <form id="bomForm" onsubmit="submitBomAdjustment(event)">
+        <input type="hidden" id="bomSkuCode">
+        <input type="hidden" id="bomComponentCode">
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-muted);">Mã SKU:</span>
+            <span style="font-weight: 600;" id="bomModalSku">C0000002130</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-muted);">Mã Vật Tư Gốc (P-code):</span>
+            <span style="font-weight: 600;" id="bomModalComp">P11230098</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Tỷ Lệ Mặc Định Gốc:</span>
+            <span style="font-weight: 600;" id="bomModalBase">1,000 PC / 1,000 CS</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="bomAdjustedCompCode">Mã Vật Tư Thay Thế / Mới (P-code)</label>
+          <input type="text" class="form-control" id="bomAdjustedCompCode" placeholder="Ví dụ: P11270186" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="bomAdjustedQty">Tỷ Lệ Mới (Số lượng trên 1,000 Thùng/CS)</label>
+          <input type="number" class="form-control" id="bomAdjustedQty" min="0" step="any" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="bomComment">Lý Do Thay Đổi</label>
+          <input type="text" class="form-control" id="bomComment" placeholder="Ví dụ: Đổi tỷ lệ hao hụt thực tế" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="bomEffectiveAt">Hẹn giờ hiệu lực (Không bắt buộc)</label>
+          <input type="datetime-local" class="form-control" id="bomEffectiveAt" style="background: rgba(15,23,42,0.6); color: white; border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 6px; width: 100%;">
+          <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">Nếu bỏ trống, thay đổi sẽ có hiệu lực ngay lập tức.</small>
+        </div>
+        
+        <div id="bomModalPermissionAlert" style="display: none; margin-top: 10px; background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; padding: 10px; font-size:12px;">
+          🔒 Bạn không có quyền chỉnh sửa định mức BOM. Liên hệ Admin để cấp quyền.
+        </div>
+        
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box;">
+          <button type="button" class="btn" id="bomResetBtn" onclick="revertBomToDefault()" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.2s;">Khôi Phục Mặc Định</button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-secondary" onclick="closeBomModal()">Hủy Bỏ</button>
+            <button type="submit" class="btn btn-success" id="bomSubmitBtn">Lưu Thay Đổi</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Client-Side Controller JavaScript -->
+  <script>
+    // Application Global State Store
+    const state = {
+      plans: [],
+      auditLogs: [],
+      selectedPlanId: null,
+      globalVersion: 'V_1.0.0',
+      selectedMaterialCodes: [],
+      filteredPlansBeforeMaterialFilter: [],
+      selectedPCodes: [], // Holds array of active selected P-code filter tags
+      hasBomAdjustPrivilege: false, // Permission check result
+      userEmail: '', // Active session email
+      filters: {
+        date: '',
+        area: '',
+        machine: '',
+        shift: '',
+        search: ''
+      }
+    };
+
+    // Calculate Vietnam timezone-adjusted (+7) current production date & ca/shift
+    function getCurrentProductionDateAndShift() {
+      // VN time is UTC+7
+      const utc = new Date().getTime() + new Date().getTimezoneOffset() * 60000;
+      const vnTime = new Date(utc + (3600000 * 7));
+      
+      const hour = vnTime.getHours();
+      const minute = vnTime.getMinutes();
+      const mins = hour * 60 + minute;
+      
+      let prodDate = new Date(vnTime);
+      let shift = 1;
+      
+      const shift1Start = 5 * 60 + 55; // 05:55
+      const shift2Start = 13 * 60 + 55; // 13:55
+      const shift3Start = 21 * 60 + 55; // 21:55
+      
+      if (mins >= shift1Start && mins < shift2Start) {
+        shift = 1;
+      } else if (mins >= shift2Start && mins < shift3Start) {
+        shift = 2;
+      } else {
+        shift = 3;
+        // If it is early morning (between 00:00 and 05:54), the production date is the PREVIOUS calendar day!
+        if (mins < shift1Start) {
+          prodDate.setDate(prodDate.getDate() - 1);
+        }
+      }
+      
+      const yyyy = prodDate.getFullYear();
+      const mm = String(prodDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(prodDate.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+      
+      return { dateStr, shift };
+    }
+
+    // Initialize App Data
+    window.onload = function() {
+      const curr = getCurrentProductionDateAndShift();
+      
+      document.getElementById('filterDate').value = curr.dateStr;
+      document.getElementById('filterShift').value = curr.shift;
+      
+      state.filters.date = curr.dateStr;
+      state.filters.shift = curr.shift.toString();
+      
+      document.getElementById('adhocDate').value = curr.dateStr;
+      
+      loadData();
+    };
+
+    // Load entire unified dataset from backend
+    function loadData(silent = false) {
+      if (!silent) showLoader('Retrieving planning records...');
+      
+      google.script.run
+          .withSuccessHandler(function(response) {
+            state.plans = response.plans || [];
+            state.auditLogs = response.auditLogs || [];
+            state.globalVersion = response.globalVersion || 'V_1.0.0';
+            state.hasBomAdjustPrivilege = response.hasBomAdjustPrivilege || false;
+            state.userEmail = response.userEmail || '';
+            
+            document.getElementById('globalVersionBadge').textContent = 'BOM ' + state.globalVersion;
+            
+            // Render latest action marquee ticker
+            const tickerEl = document.getElementById('latestAuditTicker');
+            const marqueeEl = document.getElementById('latestAuditMarquee');
+            if (response.latestAuditLog) {
+              const log = response.latestAuditLog;
+              const timeStr = log.timestamp ? `[${log.timestamp}] ` : '';
+              const userStr = log.user ? `(${log.user}): ` : '';
+              marqueeEl.innerHTML = `<span style="color: #ec4899; font-weight: 700;">${timeStr}</span> <span style="color: #c084fc; font-weight: 600;">${userStr}</span> ${log.details || ''}`;
+              tickerEl.style.display = 'flex';
+            } else {
+              tickerEl.style.display = 'none';
+            }
+            
+            // Schedule automated future reloads
+            scheduleFutureReloads(response.futureOverrides);
+            
+            renderDashboard();
+            hideLoader();
+            
+            if (!silent) showToast('Tải dữ liệu thành công!', 'success');
+          })
+          .withFailureHandler(function(err) {
+            hideLoader();
+            showToast('Không thể tải dữ liệu: ' + err.message, 'error');
+          })
+          .getHelperPlanData();
+    }
+
+    // Automatically schedules client-side reloads when future override moments occur
+    function scheduleFutureReloads(futureOverrides) {
+      if (window.activeReloadTimers) {
+        window.activeReloadTimers.forEach(t => clearTimeout(t));
+      }
+      window.activeReloadTimers = [];
+
+      if (!futureOverrides || futureOverrides.length === 0) return;
+
+      const now = Date.now();
+      const uniqueTimes = new Set();
+      
+      futureOverrides.forEach(ov => {
+        if (ov.epoch && ov.epoch > now) {
+          uniqueTimes.add(ov.epoch);
+        }
+      });
+
+      uniqueTimes.forEach(epoch => {
+        const delay = epoch - now;
+        const finalDelay = delay + 1000; // 1-second execution buffer
+        
+        console.log(`Scheduling auto-reload in ${finalDelay / 1000}s for target: ${new Date(epoch).toLocaleString()}`);
+        
+        const timerId = setTimeout(() => {
+          showToast('⏳ Đã đến giờ hẹn! Hệ thống đang tự động cập nhật định mức mới...', 'info');
+          loadData(true); // Silent database reload
+        }, finalDelay);
+        
+        window.activeReloadTimers.push(timerId);
+      });
+    }
+
+    // Tab Switch Controller
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const clickedBtn = [...document.querySelectorAll('.tab-btn')].find(btn => {
+        const attr = btn.getAttribute('onclick') || '';
+        return attr.includes(`'${tabId}'`);
+      });
+      if (clickedBtn) clickedBtn.classList.add('active');
+      
+      if (tabId === 'plans') {
+        document.getElementById('tabPlans').classList.add('active');
+      } else if (tabId === 'dispatch') {
+        document.getElementById('tabDispatch').classList.add('active');
+        renderOverallDispatchView();
+      } else if (tabId === 'audit') {
+        document.getElementById('tabAudit').classList.add('active');
+        renderAuditLogs();
+      } else if (tabId === 'settings') {
+        document.getElementById('tabSettings').classList.add('active');
+      } else if (tabId === 'guide') {
+        document.getElementById('tabGuide').classList.add('active');
+      }
+    }
+
+    // Render KPI Metrics Cards
+    function renderKPIs(filteredPlans) {
+      let pkgTotal = 0;
+      let seTotal = 0;
+      let adhocCount = 0;
+      const uniqueSkus = new Set();
+      
+      filteredPlans.forEach(plan => {
+        if (plan.area === 'PKG') pkgTotal += plan.currQty;
+        if (plan.area === 'SE') seTotal += plan.currQty;
+        if (plan.source === 'ADHOC') adhocCount++;
+        uniqueSkus.add(plan.sku);
+      });
+      
+      document.getElementById('kpiPkgTotal').textContent = pkgTotal.toLocaleString() + ' CS';
+      document.getElementById('kpiSeTotal').textContent = seTotal.toLocaleString() + ' CS';
+      document.getElementById('kpiAdhocCount').textContent = adhocCount;
+      document.getElementById('kpiSkuCount').textContent = uniqueSkus.size;
+    }
+
+    // Reset all filters to today's date & active production shift
+    function clearAllFilters() {
+      const curr = getCurrentProductionDateAndShift();
+      
+      document.getElementById('filterDate').value = curr.dateStr;
+      document.getElementById('filterArea').value = '';
+      document.getElementById('filterMachine').value = '';
+      document.getElementById('filterShift').value = curr.shift;
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterPCode').value = '';
+      
+      state.filters.date = curr.dateStr;
+      state.filters.area = '';
+      state.filters.machine = '';
+      state.filters.shift = curr.shift.toString();
+      state.filters.search = '';
+      state.filters.pcode = '';
+      state.selectedPCodes = [];
+      
+      renderPCodeTags();
+      applyFilters();
+    }
+
+    // Apply Filter values to Grid
+    function applyFilters() {
+      state.filters.date = document.getElementById('filterDate').value;
+      state.filters.area = document.getElementById('filterArea').value;
+      state.filters.machine = document.getElementById('filterMachine').value.toLowerCase().trim();
+      state.filters.shift = document.getElementById('filterShift').value;
+      state.filters.search = document.getElementById('filterSearch').value.toLowerCase().trim();
+      state.filters.pcode = document.getElementById('filterPCode').value.toLowerCase().trim();
+      
+      // Reset material multi-select codes when major filters are changed
+      state.selectedMaterialCodes = [];
+      
+      renderPlansGrid();
+    }
+
+    // Filter plans array in-memory
+    function getFilteredPlans() {
+      let filtered = state.plans.filter(plan => {
+        if (state.filters.date && plan.date !== state.filters.date) return false;
+        if (state.filters.area && plan.area !== state.filters.area) return false;
+        if (state.filters.shift && plan.shift.toString() !== state.filters.shift) return false;
+        
+        if (state.filters.machine) {
+          const match = plan.machine && plan.machine.toLowerCase().includes(state.filters.machine);
+          if (!match) return false;
+        }
+        
+        if (state.filters.search) {
+          const matchSku = plan.sku && plan.sku.toLowerCase().includes(state.filters.search);
+          const matchDesc = plan.desc && plan.desc.toLowerCase().includes(state.filters.search);
+          if (!matchSku && !matchDesc) return false;
+        }
+        
+        // P-Code Global Filter (Multiple Choice tags OR live typed input)
+        if (state.selectedPCodes.length > 0 || state.filters.pcode) {
+          if (!plan.materials) return false;
+          
+          // Match selected tags (OR condition: plan contains any of selected PCodes)
+          let matchTags = true;
+          if (state.selectedPCodes.length > 0) {
+            matchTags = plan.materials.some(mat => state.selectedPCodes.includes(mat.compCode));
+          }
+          
+          // Match typed text if any
+          let matchTyped = true;
+          if (state.filters.pcode) {
+            matchTyped = plan.materials.some(mat => mat.compCode.toLowerCase().includes(state.filters.pcode));
+          }
+          
+          if (!matchTags || !matchTyped) return false;
+        }
+        
+        return true;
+      });
+
+      // Save a copy of plans matching core filters (before material code multi-select takes place)
+      state.filteredPlansBeforeMaterialFilter = [...filtered];
+
+      // If packaging materials are selected, filter the plans to only show SKUs requiring them
+      if (state.selectedMaterialCodes.length > 0) {
+        filtered = filtered.filter(plan => {
+          if (!plan.materials) return false;
+          return plan.materials.some(mat => state.selectedMaterialCodes.includes(mat.compCode));
+        });
+      }
+
+      return filtered;
+    }
+
+    // P-code Autocomplete & Search Tags Engine
+    function showPCodeSuggestions() {
+      const input = document.getElementById('filterPCode');
+      const query = input.value.trim().toUpperCase();
+      const dropdown = document.getElementById('pcodeSuggestions');
+      
+      const pCodeMap = {};
+      state.plans.forEach(plan => {
+        (plan.materials || []).forEach(mat => {
+          const code = mat.compCode || '';
+          const name = mat.compName || '';
+          if (code.startsWith('P')) {
+            pCodeMap[code] = name;
+          }
+        });
+      });
+      
+      const uniquePCodes = Object.keys(pCodeMap).sort();
+      
+      const filtered = uniquePCodes.filter(code => {
+        if (state.selectedPCodes.includes(code)) return false;
+        return code.includes(query) || pCodeMap[code].toUpperCase().includes(query);
+      });
+      
+      if (filtered.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      dropdown.innerHTML = filtered.map(code => `
+        <div class="pcode-suggestion-item" onclick="addPCodeTag('${code}')">
+          <span style="font-weight: 600; color: var(--accent);">${code}</span>
+          <span class="desc">${pCodeMap[code]}</span>
+        </div>
+      `).join('');
+      dropdown.style.display = 'block';
+    }
+    
+    document.addEventListener('click', function(e) {
+      const wrapper = document.querySelector('.pcode-tags-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        const drop = document.getElementById('pcodeSuggestions');
+        if (drop) drop.style.display = 'none';
+      }
+    });
+    
+    function addPCodeTag(code) {
+      code = code.trim().toUpperCase();
+      if (code && !state.selectedPCodes.includes(code)) {
+        state.selectedPCodes.push(code);
+      }
+      const input = document.getElementById('filterPCode');
+      if (input) input.value = '';
+      const drop = document.getElementById('pcodeSuggestions');
+      if (drop) drop.style.display = 'none';
+      renderPCodeTags();
+      applyFilters();
+    }
+    
+    function removePCodeTag(code) {
+      state.selectedPCodes = state.selectedPCodes.filter(c => c !== code);
+      renderPCodeTags();
+      applyFilters();
+    }
+    
+    function renderPCodeTags() {
+      const container = document.getElementById('pcodeActiveTags');
+      if (!container) return;
+      if (state.selectedPCodes.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = state.selectedPCodes.map(code => `
+        <div class="pcode-tag-pill">
+          <span>${code}</span>
+          <span class="remove-btn" onclick="removePCodeTag('${code}')">&times;</span>
+        </div>
+      `).join('');
+    }
+    
+    function handlePCodeKey(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById('filterPCode');
+        const val = input.value.trim().toUpperCase();
+        if (val) {
+          addPCodeTag(val);
+        }
+      }
+    }
+    
+    function togglePCodeTag(pCode, e) {
+      if (e) e.stopPropagation();
+      if (state.selectedPCodes.includes(pCode)) {
+        removePCodeTag(pCode);
+      } else {
+        addPCodeTag(pCode);
+      }
+    }
+
+    // Main Dashboard Render
+    function renderDashboard() {
+      renderPlansGrid();
+      renderOverallDispatchView();
+    }
+
+    // Render Overall Consolidated Material Withdrawal & Machine Allocations
+    function renderOverallDispatchView() {
+      const tbody = document.getElementById('dispatchOverallTableBody');
+      if (!tbody) return;
+      
+      tbody.innerHTML = '';
+      
+      const activePlans = state.filteredPlansBeforeMaterialFilter || [];
+      
+      if (activePlans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);"><div class="empty-state"><div class="empty-icon">📦</div><p>Không có kế hoạch sản xuất nào khớp với Ngày & Ca sản xuất đã chọn.</p></div></td></tr>`;
+        return;
+      }
+      
+      const matMap = new Map(); // compCode -> { compCode, compDesc, uom, allocations: { machine: qty } }
+      
+      activePlans.forEach(plan => {
+        if (!plan.materials) return;
+        plan.materials.forEach(mat => {
+          if (!matMap.has(mat.compCode)) {
+            matMap.set(mat.compCode, {
+              compCode: mat.compCode,
+              compDesc: mat.compDesc,
+              uom: mat.uom,
+              allocations: {}
+            });
+          }
+          const item = matMap.get(mat.compCode);
+          const machine = plan.machine || 'UNKNOWN';
+          item.allocations[machine] = (item.allocations[machine] || 0) + mat.requiredQty;
+        });
+      });
+      
+      const uniqueMaterials = Array.from(matMap.values()).sort((a, b) => a.compCode.localeCompare(b.compCode));
+      
+      if (uniqueMaterials.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);"><div class="empty-state"><div class="empty-icon">⚠️</div><p>Không tìm thấy vật tư đóng gói bao bì (đầu "P") nào trong ca sản xuất hiện tại.</p></div></td></tr>`;
+        return;
+      }
+      
+      uniqueMaterials.forEach((mat, index) => {
+        const tr = document.createElement('tr');
+        
+        let totalSum = 0;
+        const allocs = [];
+        for (let machine in mat.allocations) {
+          const qty = mat.allocations[machine];
+          totalSum += qty;
+          allocs.push(`<span class="dispatch-machine-badge"><strong>${machine}</strong>: ${qty.toLocaleString(undefined, {maximumFractionDigits:0})} ${mat.uom}</span>`);
+        }
+        
+        tr.innerHTML = `
+          <td style="text-align: center; color: var(--text-muted); font-size:12px; font-weight: 500;">${index + 1}</td>
+          <td style="font-family: monospace; font-weight: 700; color: var(--accent); font-size: 13px;">${mat.compCode}</td>
+          <td style="font-size: 12px; font-weight: 500;" title="${mat.compDesc}">${mat.compDesc}</td>
+          <td style="text-align: right; font-weight: 700; color: var(--success); font-size: 14px;">${totalSum.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+          <td style="text-align: center; font-size: 11px; color: var(--text-muted); font-weight: 600;">${mat.uom}</td>
+          <td style="padding: 8px 16px; line-height: 1.8;">
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+              ${allocs.join(" ")}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Toggle multi-select material filtering
+    function toggleMaterialFilter(compCode) {
+      const idx = state.selectedMaterialCodes.indexOf(compCode);
+      if (idx > -1) {
+        state.selectedMaterialCodes.splice(idx, 1);
+      } else {
+        state.selectedMaterialCodes.push(compCode);
+      }
+      renderPlansGrid();
+    }
+
+    // Render multi-select check-boxes and summarized machine allocation table
+    function renderDispatchHub(allFilteredPlansBeforeMaterialFilter) {
+      const container = document.getElementById('dispatchMaterialOptions');
+      const tbody = document.getElementById('dispatchSummaryTableBody');
+      if (!container || !tbody) return;
+      
+      // 1. Accumulate all unique materials from the active plans (prior to material filtering)
+      const matMap = new Map(); // compCode -> { compCode, compDesc, uom, allocations: { machine: qty } }
+      
+      allFilteredPlansBeforeMaterialFilter.forEach(plan => {
+        if (!plan.materials) return;
+        plan.materials.forEach(mat => {
+          if (!matMap.has(mat.compCode)) {
+            matMap.set(mat.compCode, {
+              compCode: mat.compCode,
+              compDesc: mat.compDesc,
+              uom: mat.uom,
+              allocations: {}
+            });
+          }
+          const item = matMap.get(mat.compCode);
+          const machine = plan.machine || 'UNKNOWN';
+          item.allocations[machine] = (item.allocations[machine] || 0) + mat.requiredQty;
+        });
+      });
+      
+      const uniqueMaterials = Array.from(matMap.values()).sort((a, b) => a.compCode.localeCompare(b.compCode));
+      
+      // 2. Render material options checkboxes
+      const scrollPos = container.scrollTop;
+      container.innerHTML = '';
+      
+      if (uniqueMaterials.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-dark); font-size:12px; padding: 10px;">No packaging materials found in active plans.</div>`;
+      } else {
+        uniqueMaterials.forEach(mat => {
+          const isChecked = state.selectedMaterialCodes.includes(mat.compCode);
+          
+          let totalSum = 0;
+          for (let m in mat.allocations) totalSum += mat.allocations[m];
+          
+          const div = document.createElement('div');
+          div.style.display = 'flex';
+          div.style.alignItems = 'center';
+          div.style.gap = '8px';
+          div.style.fontSize = '12px';
+          
+          div.innerHTML = `
+            <input type="checkbox" id="dispatch_chk_${mat.compCode}" value="${mat.compCode}" ${isChecked ? 'checked' : ''} onchange="toggleMaterialFilter('${mat.compCode}')" style="cursor: pointer;">
+            <label for="dispatch_chk_${mat.compCode}" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 6px;">
+              <span style="font-weight:700; color: #818cf8; font-family: monospace;">${mat.compCode}</span>
+              <span style="color: var(--text-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left; max-width: 140px;" title="${mat.compDesc}">${mat.compDesc}</span>
+              <span style="font-weight: 700; color: var(--success);">${totalSum.toLocaleString(undefined, {maximumFractionDigits:0})} ${mat.uom}</span>
+            </label>
+          `;
+          container.appendChild(div);
+        });
+        container.scrollTop = scrollPos;
+      }
+      
+      // 3. Render Dispatch Summary table
+      tbody.innerHTML = '';
+      if (state.selectedMaterialCodes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align: center; color: var(--text-dark); font-size:12px; padding: 10px;">No materials selected. Check options above to filter & see allocation!</td></tr>`;
+        return;
+      }
+      
+      state.selectedMaterialCodes.forEach(code => {
+        const mat = matMap.get(code);
+        if (!mat) return;
+        
+        const allocs = [];
+        let totalSum = 0;
+        for (let machine in mat.allocations) {
+          const qty = mat.allocations[machine];
+          totalSum += qty;
+          allocs.push(`<span style="white-space: nowrap; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 2px 6px; border-radius:4px; font-size: 11px; display: inline-block;"><strong>${machine}</strong>: ${qty.toLocaleString(undefined, {maximumFractionDigits:0})} ${mat.uom}</span>`);
+        }
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family: monospace; font-weight: 700; color: var(--accent); vertical-align: top; font-size: 12px; width: 100px;">
+            ${code}
+            <div style="font-size: 10px; font-weight: normal; color: var(--text-muted); margin-top:2px;">Total: ${totalSum.toLocaleString(undefined, {maximumFractionDigits:0})} ${mat.uom}</div>
+          </td>
+          <td style="padding: 8px 16px; line-height: 1.8;">
+            ${allocs.join(" ")}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Render Plans Spreadsheet Grid
+    function renderPlansGrid() {
+      const filteredPlans = getFilteredPlans();
+      renderKPIs(filteredPlans);
+      
+      // Render Dispatch Hub options and allocation table!
+      renderDispatchHub(state.filteredPlansBeforeMaterialFilter || []);
+      
+      // Determine max packaging material count across currently filtered plans
+      let maxPCount = 0;
+      filteredPlans.forEach(plan => {
+        if (plan.materials && plan.materials.length > maxPCount) {
+          maxPCount = plan.materials.length;
+        }
+      });
+      
+      // Render plansTable headers dynamically
+      const headerRow = document.getElementById('plansTableHeaderRow');
+      if (headerRow) {
+        let headersHtml = `
+          <th style="width: 70px;">Khu Vực</th>
+          <th style="width: 120px;">Máy</th>
+          <th>Mã SKU / Tên SKU</th>
+          <th style="text-align: right; width: 120px;">Sản Lượng (CS) <span style="font-size: 9px; display: block; font-weight: normal; color: var(--text-dark); text-transform: none;">(Đúp chuột để sửa)</span></th>
+        `;
+        
+        for (let i = 1; i <= maxPCount; i++) {
+          headersHtml += `<th style="text-align: center; min-width: 135px;">P${i}</th>`;
+        }
+        
+        headersHtml += `<th style="text-align: center; width: 80px;">Nguồn</th>`;
+        headerRow.innerHTML = headersHtml;
+      }
+      
+      const tbody = document.getElementById('plansTableBody');
+      tbody.innerHTML = '';
+      
+      if (filteredPlans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${5 + maxPCount}"><div class="empty-state"><div class="empty-icon">📂</div><p>Không tìm thấy kế hoạch sản xuất nào khớp với bộ lọc</p></div></td></tr>`;
+        // Clear drawer selected state
+        state.selectedPlanId = null;
+        renderMaterialsPanel();
+        return;
+      }
+      
+      filteredPlans.forEach(plan => {
+        const tr = document.createElement('tr');
+        if (plan.source === 'ADHOC') tr.classList.add('row-adhoc');
+        if (state.selectedPlanId === plan.planId) tr.classList.add('selected');
+        
+        tr.onclick = function(e) {
+          if (e.target.tagName === 'INPUT') return;
+          
+          document.querySelectorAll('#plansTable tbody tr').forEach(r => r.classList.remove('selected'));
+          tr.classList.add('selected');
+          state.selectedPlanId = plan.planId;
+          renderMaterialsPanel();
+        };
+        
+        const badgeAreaClass = plan.area === 'PKG' ? 'badge-area pkg' : 'badge-area se';
+        const badgeSourceClass = plan.source === 'SYNC' ? 'badge-source sync' : 'badge-source adhoc';
+        
+        let pCellsHtml = '';
+        for (let i = 0; i < maxPCount; i++) {
+          const mat = plan.materials && plan.materials[i];
+          if (mat) {
+            // Highlight if matches selected active filter tags OR live typed text
+            const searchTerm = (state.filters.pcode || '').trim().toUpperCase();
+            const isMatchTyped = searchTerm && mat.compCode.toUpperCase().includes(searchTerm);
+            const isMatchTag = state.selectedPCodes.includes(mat.compCode);
+            const highlightClass = (isMatchTyped || isMatchTag) ? 'p-cell-highlight' : '';
+            
+            pCellsHtml += `
+              <td style="text-align: center; vertical-align: middle; padding: 6px;" onclick="togglePCodeTag('${mat.compCode}', event)">
+                <div class="p-cell ${highlightClass}" style="cursor: pointer;" title="Click to filter by ${mat.compCode}">
+                  <div class="p-code">${mat.compCode}</div>
+                  <div class="p-qty">${mat.requiredQty.toLocaleString(undefined, {maximumFractionDigits:1})} ${mat.uom}</div>
+                </div>
+              </td>
+            `;
+          } else {
+            pCellsHtml += `<td></td>`;
+          }
+        }
+        
+        tr.innerHTML = `
+          <td><span class="${badgeAreaClass}">${plan.area}</span></td>
+          <td><span style="font-weight: 600; color: var(--text-dark);">${plan.machine}</span></td>
+          <td>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: monospace; font-weight: 700; color: var(--primary); font-size: 12.5px;">${plan.sku}</span>
+              <span style="color: var(--text-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;" title="${plan.desc}">${plan.desc}</span>
+            </div>
+          </td>
+          <td style="text-align: right;" class="plan-output-cell" data-id="${plan.planId}">
+            <span class="editable-cell" ondblclick="startInlineEditing('${plan.planId}', this)">${plan.currQty.toLocaleString()}</span>
+          </td>
+          ${pCellsHtml}
+          <td style="text-align: center; white-space: nowrap;">
+            <span class="${badgeSourceClass}">${plan.source}</span>
+            ${(state.hasBomAdjustPrivilege && plan.source === 'ADHOC') ? `
+              <button class="btn-delete-adhoc" onclick="deleteAdhocRow('${plan.planId}', event)" title="Xóa dòng kế hoạch này">🗑️</button>
+            ` : ''}
+          </td>
+        `;
+        
+        tbody.appendChild(tr);
+      });
+      
+      // Auto resolve materials panel if selected item exists
+      renderMaterialsPanel();
+    }
+
+    // Double Click Inline Edit trigger
+    function startInlineEditing(planId, element) {
+      const plan = state.plans.find(p => p.planId === planId);
+      if (!plan) return;
+      
+      const parentTd = element.parentNode;
+      const origText = element.textContent;
+      
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.className = 'inline-edit-input';
+      input.value = plan.currQty;
+      
+      parentTd.innerHTML = '';
+      parentTd.appendChild(input);
+      input.focus();
+      input.select();
+      
+      let isSaving = false;
+      
+      function saveValue() {
+        if (isSaving) return;
+        const val = Number(input.value);
+        if (isNaN(val) || val < 0) {
+          showToast('Giá trị sản lượng không hợp lệ!', 'error');
+          parentTd.innerHTML = '';
+          parentTd.appendChild(element);
+          return;
+        }
+        
+        if (val === plan.currQty) {
+          parentTd.innerHTML = '';
+          parentTd.appendChild(element);
+          return;
+        }
+        
+        isSaving = true;
+        parentTd.innerHTML = '<div class="spinner-sm"></div>';
+        
+        google.script.run
+          .withSuccessHandler(function(response) {
+            plan.currQty = val;
+            
+            // Re-calculate packaging materials dynamically in-memory immediately!
+            plan.materials.forEach(mat => {
+              mat.requiredQty = (val * mat.activeQty) / 1000;
+            });
+            
+            showToast(response.message, 'success');
+            renderDashboard(); // Re-render grid and KPIs
+          })
+          .withFailureHandler(function(err) {
+            showToast('Lưu thất bại: ' + err.message, 'error');
+            parentTd.innerHTML = '';
+            parentTd.appendChild(element);
+          })
+          .updatePlanOutput(planId, val);
+      }
+      
+      input.onkeydown = function(e) {
+        if (e.key === 'Enter') saveValue();
+        if (e.key === 'Escape') {
+          parentTd.innerHTML = '';
+          parentTd.appendChild(element);
+        }
+      };
+      
+      input.onblur = saveValue;
+    }
+
+    // Render Sliding BOM Panel
+    function renderMaterialsPanel() {
+      const panel = document.getElementById('materialsList');
+      panel.innerHTML = '';
+      
+      if (!state.selectedPlanId) {
+        panel.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🗂️</div>
+            <p>Chưa chọn dòng kế hoạch sản xuất nào</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const plan = state.plans.find(p => p.planId === state.selectedPlanId);
+      if (!plan) {
+        state.selectedPlanId = null;
+        renderMaterialsPanel();
+        return;
+      }
+      
+      // Update drawer title with details
+      const headerHtml = `
+        <h2>${plan.sku}</h2>
+        <p class="sub" style="font-weight: 500; color: var(--primary); margin-top:2px;">${plan.desc}</p>
+        <p class="sub" style="font-size:11px; margin-top:4px;">Máy: ${plan.machine} • Ca: ${plan.shift} • Sản Lượng: <strong>${plan.currQty.toLocaleString()} CS</strong></p>
+      `;
+      document.querySelector('.drawer-header').innerHTML = headerHtml;
+      
+      if (!plan.materials || plan.materials.length === 0) {
+        panel.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <p style="font-weight: 600;">Không tìm thấy vật tư bao bì đóng gói</p>
+            <p style="font-size: 11px; color: var(--text-dark);">SKU này không có vật tư nào bắt đầu bằng chữ "P" trong cơ sở dữ liệu định mức BOM.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      plan.materials.forEach(mat => {
+        const card = document.createElement('div');
+        card.className = 'material-card';
+        
+        const qtyFormatted = mat.requiredQty.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        const baseRatioFormatted = mat.baseQty.toLocaleString();
+        
+        let ratioHtml = `${baseRatioFormatted} ${mat.uom} / 1000 CS`;
+        if (mat.hasOverride) {
+          ratioHtml = `
+            <span class="override-indicator" onclick="openBomModal('${plan.sku}', '${mat.origCompCode}', ${mat.baseQty}, '${mat.compCode}', ${mat.activeQty}, '${mat.uom}')">
+              ⚠️ Đã Thay Thế (${mat.activeQty.toLocaleString()} ${mat.uom})
+            </span>
+          `;
+        }
+        
+        const qtyClass = mat.hasOverride ? 'mat-qty overridden' : 'mat-qty';
+        const compCodeDisplay = mat.hasOverride ? `${mat.compCode} <span style="font-size:10px; font-weight: normal; color: var(--text-dark);">(Gốc: ${mat.origCompCode})</span>` : mat.compCode;
+        
+        card.innerHTML = `
+          <div class="mat-header">
+            <span class="mat-code">${compCodeDisplay}</span>
+            <span class="mat-uom">${mat.uom}</span>
+          </div>
+          <div class="mat-desc" title="${mat.compDesc}">${mat.compDesc}</div>
+          <div class="mat-calc">
+            <div class="mat-ratio">${ratioHtml}</div>
+            <div class="${qtyClass}">${qtyFormatted} ${mat.uom}</div>
+          </div>
+          <span class="adjust-bom-btn" onclick="openBomModal('${plan.sku}', '${mat.origCompCode}', ${mat.baseQty}, '${mat.compCode}', ${mat.activeQty}, '${mat.uom}')">
+            Thay Đổi / Điều Chỉnh BOM
+          </span>
+        `;
+        
+        panel.appendChild(card);
+      });
+    }
+
+    // Render Timeline Audit Trail Logs (Tab 2)
+    function renderAuditLogs() {
+      const timeline = document.getElementById('auditTimeline');
+      timeline.innerHTML = '';
+      
+      if (state.auditLogs.length === 0) {
+        timeline.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📜</div>
+            <p>Chưa ghi nhận nhật ký chỉnh sửa hệ thống nào</p>
+          </div>
+        `;
+        return;
+      }
+      
+      state.auditLogs.forEach(log => {
+        const item = document.createElement('div');
+        const catClass = log.category ? log.category.toLowerCase() : 'plan_output';
+        item.className = `timeline-item ${catClass}`;
+        
+        item.innerHTML = `
+          <div class="timeline-meta">
+            <span style="font-weight: 600; color: var(--primary);">${log.user}</span>
+            <span>${log.timestamp}</span>
+          </div>
+          <div class="timeline-desc">${log.details}</div>
+        `;
+        
+        timeline.appendChild(item);
+      });
+    }
+
+    // Modal Manager - Ad-hoc Plan
+    function openAdhocModal() {
+      const defaultDate = state.filters.date || getCurrentProductionDateAndShift().dateStr;
+      document.getElementById('adhocDate').value = defaultDate;
+      const defaultShift = state.filters.shift || getCurrentProductionDateAndShift().shift.toString();
+      document.getElementById('adhocShift').value = defaultShift;
+      document.getElementById('adhocModal').classList.add('show');
+    }
+    
+    function closeAdhocModal() {
+      document.getElementById('adhocModal').classList.remove('show');
+      document.getElementById('adhocForm').reset();
+    }
+    
+    function submitAdhocRow(e) {
+      e.preventDefault();
+      
+      const rowData = {
+        date: document.getElementById('adhocDate').value,
+        area: document.getElementById('adhocArea').value,
+        sku: document.getElementById('adhocSku').value,
+        desc: document.getElementById('adhocDesc').value,
+        machine: document.getElementById('adhocMachine').value,
+        shift: document.getElementById('adhocShift').value,
+        output: Number(document.getElementById('adhocOutput').value)
+      };
+      
+      showLoader('Đang thêm dòng kế hoạch ad-hoc thủ công...');
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          closeAdhocModal();
+          showToast(response.message, 'success');
+          loadData(true); // silent reload
+        })
+        .withFailureHandler(function(err) {
+          hideLoader();
+          showToast('Không thể thêm dòng ad-hoc: ' + err.message, 'error');
+        })
+        .addAdhocPlanRow(rowData);
+    }
+
+    // Delete manual ad-hoc plans via Admin authorization
+    function deleteAdhocRow(planId, event) {
+      if (event) {
+        event.stopPropagation(); // Prevent row selection drawer trigger
+      }
+      
+      if (!confirm("Bạn có chắc chắn muốn xóa dòng kế hoạch Ad-hoc này không?")) {
+        return;
+      }
+      
+      showLoader("Đang xóa dòng kế hoạch ad-hoc...");
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          hideLoader();
+          if (response.success) {
+            showToast(response.message, 'success');
+            loadData(true); // silent database reload
+          } else {
+            showToast(response.message || "Lỗi khi xóa dòng kế hoạch!", 'error');
+          }
+        })
+        .withFailureHandler(function(err) {
+          hideLoader();
+          showToast(err.message || "Lỗi kết nối máy chủ!", 'error');
+        })
+        .deleteAdhocPlanRow(planId);
+    }
+
+    // Modal Manager - BOM Override Adjustment
+    function openBomModal(sku, origCompCode, baseQty, currentActiveCompCode, currentActiveQty, uom) {
+      document.getElementById('bomSkuCode').value = sku;
+      document.getElementById('bomComponentCode').value = origCompCode; // original component code
+      
+      document.getElementById('bomModalSku').textContent = sku;
+      document.getElementById('bomModalComp').textContent = origCompCode;
+      document.getElementById('bomModalBase').textContent = `${baseQty.toLocaleString()} ${uom} / 1000 CS`;
+      
+      document.getElementById('bomAdjustedCompCode').value = currentActiveCompCode || origCompCode;
+      document.getElementById('bomAdjustedQty').value = currentActiveQty;
+      document.getElementById('bomComment').value = '';
+      document.getElementById('bomEffectiveAt').value = '';
+      
+      // Enforce authorization controls on the frontend
+      const inputComp = document.getElementById('bomAdjustedCompCode');
+      const inputQty = document.getElementById('bomAdjustedQty');
+      const inputComment = document.getElementById('bomComment');
+      const inputEffective = document.getElementById('bomEffectiveAt');
+      const submitBtn = document.getElementById('bomSubmitBtn');
+      const resetBtn = document.getElementById('bomResetBtn');
+      const alertDiv = document.getElementById('bomModalPermissionAlert');
+      
+      if (state.hasBomAdjustPrivilege) {
+        inputComp.disabled = false;
+        inputQty.disabled = false;
+        inputComment.disabled = false;
+        inputEffective.disabled = false;
+        submitBtn.disabled = false;
+        resetBtn.disabled = false;
+        resetBtn.style.opacity = '1';
+        resetBtn.style.pointerEvents = 'auto';
+        alertDiv.style.display = 'none';
+      } else {
+        inputComp.disabled = true;
+        inputQty.disabled = true;
+        inputComment.disabled = true;
+        inputEffective.disabled = true;
+        submitBtn.disabled = true;
+        resetBtn.disabled = true;
+        resetBtn.style.opacity = '0.5';
+        resetBtn.style.pointerEvents = 'none';
+        alertDiv.style.display = 'block';
+      }
+      
+      document.getElementById('bomModal').classList.add('show');
+    }
+    
+    function closeBomModal() {
+      document.getElementById('bomModal').classList.remove('show');
+    }
+    
+    function submitBomAdjustment(e) {
+      e.preventDefault();
+      
+      const sku = document.getElementById('bomSkuCode').value;
+      const origComp = document.getElementById('bomComponentCode').value;
+      const adjComp = document.getElementById('bomAdjustedCompCode').value.trim().toUpperCase();
+      const adjQty = Number(document.getElementById('bomAdjustedQty').value);
+      const comment = document.getElementById('bomComment').value;
+      const effectiveAt = document.getElementById('bomEffectiveAt').value;
+      
+      if (!adjComp) {
+        showToast('Mã vật tư điều chỉnh không được để trống!', 'error');
+        return;
+      }
+      
+      showLoader('Đang áp dụng thay đổi tỷ lệ định mức bao bì tùy chỉnh...');
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          closeBomModal();
+          showToast(response.message, 'success');
+          loadData(true); // silent reload
+        })
+        .withFailureHandler(function(err) {
+          hideLoader();
+          showToast('Không thể điều chỉnh định mức BOM: ' + err.message, 'error');
+        })
+        .adjustBOM(sku, origComp, adjComp, adjQty, comment, effectiveAt);
+    }
+
+    function revertBomToDefault() {
+      const sku = document.getElementById('bomSkuCode').value;
+      const origComp = document.getElementById('bomComponentCode').value;
+      
+      if (!confirm(`Bạn có chắc chắn muốn khôi phục định mức gốc của SKU ${sku} (Nguyên vật liệu ${origComp}) về mặc định SAP?`)) {
+        return;
+      }
+      
+      showLoader('Đang khôi phục định mức về mặc định hệ thống...');
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          closeBomModal();
+          showToast(response.message, 'success');
+          loadData(true); // silent reload
+        })
+        .withFailureHandler(function(err) {
+          hideLoader();
+          showToast('Không thể khôi phục định mức: ' + err.message, 'error');
+        })
+        .resetBOM(sku, origComp);
+    }
+
+    // Trigger complete import sync of master records
+    function triggerFullSync() {
+      if (!confirm('Bạn có chắc chắn muốn tiến hành đồng bộ? Hệ thống sẽ đọc dữ liệu từ tab "Planning input" & "ZMNU" để nhập các dòng kế hoạch mới. Các thay đổi và dòng ad-hoc hiện có sẽ được giữ nguyên.')) return;
+      
+      showLoader('Đang đồng bộ dữ liệu hệ thống từ bảng tính...');
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+          showToast(`Đồng bộ thành công! Đã tải ${res.syncedPlans} kế hoạch sản xuất và ${res.syncedBoms} nguyên vật liệu BOM.`, 'success');
+          loadData(true); // silent reload
+        })
+        .withFailureHandler(function(err) {
+          hideLoader();
+          showToast('Đồng bộ thất bại: ' + err.message, 'error');
+        })
+        .syncHelperPlannerMasterData();
+    }
+
+    // Trigger reset of all custom overrides back to baseline
+    function triggerResetAllOverrides() {
+      if (!confirm('BẠN CÓ CHẮC CHẮN MUỐN KHÔI PHỤC TOÀN BỘ ĐỊNH MỨC VỀ GỐC?\nHành động này sẽ hủy bỏ tất cả thay đổi/swap vật tư tùy chỉnh trên toàn hệ thống và khôi phục về giá trị ZMNU mặc định.')) return;
+      
+      showLoader('Khôi phục toàn bộ định mức gốc...');
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+          showToast(res.message, 'success');
+          loadData(true); // silent reload
+        })
+        .withFailureHandler(function(err) {
+          hideLoader();
+          showToast('Khôi phục thất bại: ' + err.message, 'error');
+        })
+        .resetAllBOMOverrides();
+    }
+
+    // UI Toast Messaging Manager
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'none';
+        toast.offsetHeight; // trigger reflow
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.transition = 'all 0.5s';
+        
+        setTimeout(() => toast.remove(), 500);
+      }, 3500);
+    }
+
+    // Loader controls
+    function showLoader(text) {
+      document.getElementById('loadingText').textContent = text;
+      document.getElementById('loadingOverlay').classList.add('show');
+    }
+    
+    function hideLoader() {
+      document.getElementById('loadingOverlay').classList.remove('show');
+    }
+
+    // Premium Theme Toggler Manager (Light Mode default, option for Dark Mode)
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark-theme');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeButton(isDark);
+    }
+    
+    function updateThemeButton(isDark) {
+      const btn = document.getElementById('themeToggleBtn');
+      if (btn) {
+        btn.innerHTML = isDark ? '☀️ Chế độ sáng' : '🌙 Chế độ tối';
+      }
+    }
+    
+    // Initialize theme based on preference
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      const isDark = (savedTheme === 'dark');
+      if (isDark) {
+        document.documentElement.classList.add('dark-theme');
+      } else {
+        document.documentElement.classList.remove('dark-theme');
+      }
+      window.addEventListener('DOMContentLoaded', () => {
+        updateThemeButton(isDark);
+      });
+    })();
+  </script>
+</body>
+</html>

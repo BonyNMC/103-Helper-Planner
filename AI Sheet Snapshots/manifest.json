@@ -1,0 +1,58 @@
+{
+  "spreadsheetName": "103-Helper Planner",
+  "spreadsheetId": "1Gq9GJs2994Mv3m-m8VvewkO3-o5gToFUNJtFPHvSsXs",
+  "generatedAt": "2026-05-21 08:48:32",
+  "maxRowsPerSheet": 200,
+  "sheets": [
+    {
+      "name": "SETUP_NEW",
+      "rows": 49,
+      "columns": 21
+    },
+    {
+      "name": "Size Type",
+      "rows": 1714,
+      "columns": 30
+    },
+    {
+      "name": "HELPER_BOM_ACCESS",
+      "rows": 3,
+      "columns": 4
+    },
+    {
+      "name": "HELPER_PLAN",
+      "rows": 235,
+      "columns": 11
+    },
+    {
+      "name": "HELPER_BOM_MASTER",
+      "rows": 2193,
+      "columns": 6
+    },
+    {
+      "name": "HELPER_BOM_ADJUSTMENTS",
+      "rows": 3,
+      "columns": 12
+    },
+    {
+      "name": "HELPER_AUDIT_LOG",
+      "rows": 22,
+      "columns": 8
+    },
+    {
+      "name": "ZMNU",
+      "rows": 4705,
+      "columns": 13
+    },
+    {
+      "name": "Planning input",
+      "rows": 2036,
+      "columns": 9
+    },
+    {
+      "name": "Sheet2",
+      "rows": 2,
+      "columns": 13
+    }
+  ]
+}

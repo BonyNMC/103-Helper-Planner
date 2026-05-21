@@ -1,0 +1,22 @@
+Timestamp,User,Category,Target ID,Action,Old Value,New Value,Details
+2026-05-20 19:00:22,cuong_ng_nguyen@colpal.com,PLAN_OUTPUT,PLN_ADHOC_1779278422046,CREATE,,234,"Created ad-hoc plan: SKU 61034595 (PKG, Machine HA1101, Shift 2) with output 234 CS"
+2026-05-20 19:08:00,cuong_ng_nguyen@colpal.com,BOM_ADJUSTMENT,61034595_P11242172,OVERRIDE,1000,999,Overrode BOM component P11242172 for SKU 61034595: Changed ratio from 1000 to 999 per 1000 CS. Comment: aa
+2026-05-20 19:08:30,cuong_ng_nguyen@colpal.com,BOM_ADJUSTMENT,61034595_P11242172,OVERRIDE,999,1000,Overrode BOM component P11242172 for SKU 61034595: Changed ratio from 999 to 1000 per 1000 CS. Comment: test
+2026-05-20 19:19:31,cuong_ng_nguyen@colpal.com,PLAN_OUTPUT,PLN_ADHOC_1779279571944,CREATE,,300,"Created ad-hoc plan: SKU 61034595 (PKG, Machine HA1101, Shift 2) with output 300 CS"
+2026-05-20 19:24:40,cuong_ng_nguyen@colpal.com,BOM_ADJUSTMENT,61034595_P11242172,OVERRIDE,P11242172:1000,PA:1000,"Overrode BOM SKU 61034595 (P11242172): Changed P-Code P11242172->PA, Ratio 1000->1000 per 1000 CS. By: cuong_ng_nguyen@colpal.com. Comment: test"
+2026-05-20 19:36:54,cuong_ng_nguyen@colpal.com,BOM_REVERSION,61034595_P11242172,REVERT,,,Reverted custom override for SKU 61034595 (P11242172) back to master default. By: cuong_ng_nguyen@colpal.com.
+2026-05-20 19:39:02,cuong_ng_nguyen@colpal.com,BOM_ADJUSTMENT,61034595_P11242172,OVERRIDE,P11242172:1000,P11:1000,"Overrode BOM SKU 61034595 (P11242172): Changed P-Code P11242172->P11, Ratio 1000->1000 per 1000 CS (Hiệu lực từ: 2026-05-20 19:40:00). By: cuong_ng_nguyen@colpal.com. Comment: test"
+2026-05-20 19:48:30,cuong_ng_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_ng_nguyen@colpal.com."
+2026-05-20 19:58:18,cuong_ng_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_ng_nguyen@colpal.com."
+2026-05-20 20:05:04,cuong_ng_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_ng_nguyen@colpal.com."
+2026-05-20 21:31:42,cuong_ng_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_ng_nguyen@colpal.com."
+2026-05-20 21:32:00,cuong_ng_nguyen@colpal.com,BOM_RESET_ALL,ALL_BOM,RESET,,,Reset ALL 1 active custom BOM overrides back to original default master. By: cuong_ng_nguyen@colpal.com.
+2026-05-20 21:32:07,cuong_ng_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_ng_nguyen@colpal.com."
+2026-05-20 21:33:28,cuong_ng_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_ng_nguyen@colpal.com."
+2026-05-20 21:33:49,cuong_ng_nguyen@colpal.com,PLAN_OUTPUT,PLN_SYNC_213,UPDATE,10000,12000,"User cuong_ng_nguyen@colpal.com changed output of SKU 32138 (SE, Machine Cap 2, Shift 2) from 10000 to 12000 CS"
+2026-05-21 8:19:01,cuong_trieu_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_trieu_nguyen@colpal.com."
+2026-05-21 8:22:14,cuong_trieu_nguyen@colpal.com,PLAN_OUTPUT,PLN_ADHOC_1779326534704,CREATE,,20,"Created ad-hoc plan: SKU 61009152 (PKG, Machine HA03, Shift 1) with output 20 CS"
+2026-05-21 8:22:22,cuong_trieu_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_trieu_nguyen@colpal.com."
+2026-05-21 8:23:42,cuong_trieu_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_trieu_nguyen@colpal.com."
+2026-05-21 8:23:51,cuong_trieu_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_trieu_nguyen@colpal.com."
+2026-05-21 8:26:08,cuong_trieu_nguyen@colpal.com,DATABASE_SYNC,SYSTEM,SYNC,,,"Triggered full master database sync: Synced 231 plans, 2192 BOM master rows. By: cuong_trieu_nguyen@colpal.com."
