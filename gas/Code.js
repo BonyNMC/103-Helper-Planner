@@ -545,6 +545,7 @@ function _copyGoogleSheetData(config) {
   let isRelativeWorkingDays = false;
   let thresholdStartDate = startDate;
 
+  // 1. Resolve relative working days starting from the bottom up (highly optimized)
   if (config.dateColumn && dateIndex >= 0) {
     const rawStart = config.startDate;
     if (rawStart !== null && rawStart !== undefined && rawStart !== '') {
@@ -553,26 +554,38 @@ function _copyGoogleSheetData(config) {
         isRelativeWorkingDays = true;
         const workingDaysCount = Math.abs(num);
 
-        // Fetch only the date column to find unique dates extremely fast
-        const dateValues = sourceSheet.getRange(2, dateIndex + 1, lastRow - 1, 1).getValues();
         const seenDates = new Set();
         const uniqueDates = [];
-        for (let i = 0; i < dateValues.length; i++) {
-          const val = dateValues[i][0];
-          const parsed = _parseFlexibleDate(val, sourceTz);
-          if (parsed) {
-            const dateStr = Utilities.formatDate(parsed, sourceTz, "yyyy-MM-dd");
-            if (!seenDates.has(dateStr)) {
-              seenDates.add(dateStr);
-              uniqueDates.push(parsed);
+        const DATE_CHUNK_SIZE = 5000;
+        let dateStop = false;
+
+        // Scan from bottom to top in chunks of 5000 rows
+        for (let currentEndRow = lastRow; currentEndRow >= 2; currentEndRow -= DATE_CHUNK_SIZE) {
+          const startRow = Math.max(2, currentEndRow - DATE_CHUNK_SIZE + 1);
+          const rowCount = currentEndRow - startRow + 1;
+          const dateValues = sourceSheet.getRange(startRow, dateIndex + 1, rowCount, 1).getValues();
+
+          // Scan within chunk bottom-to-top
+          for (let i = dateValues.length - 1; i >= 0; i--) {
+            const val = dateValues[i][0];
+            const parsed = _parseFlexibleDate(val, sourceTz);
+            if (parsed) {
+              const dateStr = Utilities.formatDate(parsed, sourceTz, "yyyy-MM-dd");
+              if (!seenDates.has(dateStr)) {
+                seenDates.add(dateStr);
+                uniqueDates.push(parsed);
+                if (seenDates.size >= workingDaysCount) {
+                  dateStop = true;
+                  break;
+                }
+              }
             }
           }
+          if (dateStop) break;
         }
 
         if (uniqueDates.length > 0) {
-          // Sort descending (most recent first)
-          uniqueDates.sort((a, b) => b.getTime() - a.getTime());
-          // Pick the X-th most recent unique date
+          uniqueDates.sort((a, b) => b.getTime() - a.getTime()); // newest first
           const targetIndex = Math.min(workingDaysCount - 1, uniqueDates.length - 1);
           thresholdStartDate = new Date(uniqueDates[targetIndex]);
           thresholdStartDate.setHours(0, 0, 0, 0);
@@ -584,34 +597,59 @@ function _copyGoogleSheetData(config) {
   targetSheet.clearContents();
   _writeGoogleSheetRows(targetSheet, 1, _sanitizeValuesForWrite([headers], sourceTz));
 
+  // 2. Fetch and filter row data bottom-up with early termination
   const allRowsToWrite = [];
-  const CHUNK_SIZE = 50000;
-  for (let sourceRow = 2; sourceRow <= lastRow; sourceRow += CHUNK_SIZE) {
-    const rowCount = Math.min(CHUNK_SIZE, lastRow - sourceRow + 1);
-    const rows = sourceSheet.getRange(sourceRow, 1, rowCount, lastColumn).getValues();
-    const filteredRows = config.dateColumn
-      ? rows.filter(row => {
+  const CHUNK_SIZE = 5000;
+  let shouldStop = false;
+
+  for (let currentEndRow = lastRow; currentEndRow >= 2; currentEndRow -= CHUNK_SIZE) {
+    const startRow = Math.max(2, currentEndRow - CHUNK_SIZE + 1);
+    const rowCount = currentEndRow - startRow + 1;
+    const rows = sourceSheet.getRange(startRow, 1, rowCount, lastColumn).getValues();
+
+    // Process chunk bottom-to-top
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const row = rows[i];
+      if (config.dateColumn && dateIndex >= 0) {
         const rowDate = _parseFlexibleDate(row[dateIndex], sourceTz);
-        if (!rowDate) return false;
-        
+        if (!rowDate) continue; // Skip blank or malformed date rows
+
+        // Early termination: since rows are chronologically sorted, if row date is older than
+        // our start limit, all remaining rows higher up are also older. Stop scanning completely!
         if (isRelativeWorkingDays) {
-          if (thresholdStartDate && rowDate < thresholdStartDate) return false;
+          if (thresholdStartDate && rowDate < thresholdStartDate) {
+            shouldStop = true;
+            break;
+          }
         } else {
-          if (startDate && rowDate <= startDate) return false;
+          if (startDate && rowDate <= startDate) {
+            shouldStop = true;
+            break;
+          }
         }
 
-        if (endDate && rowDate > endDate) return false;
-        if (!latestDate || rowDate > latestDate) latestDate = rowDate;
-        return true;
-      })
-      : rows;
+        // Skip rows newer than end date (but keep scanning since older matching rows reside above)
+        if (endDate && rowDate > endDate) {
+          continue;
+        }
 
-    if (filteredRows.length === 0) continue;
-    allRowsToWrite.push(..._sanitizeValuesForWrite(filteredRows, sourceTz));
+        if (!latestDate || rowDate > latestDate) {
+          latestDate = rowDate;
+        }
+      }
+
+      allRowsToWrite.push(row);
+    }
+
+    if (shouldStop) break;
   }
 
+  // 3. Restore original chronological top-to-bottom order
+  allRowsToWrite.reverse();
+
   if (allRowsToWrite.length > 0) {
-    _writeGoogleSheetRows(targetSheet, 2, allRowsToWrite);
+    const sanitizedRows = _sanitizeValuesForWrite(allRowsToWrite, sourceTz);
+    _writeGoogleSheetRows(targetSheet, 2, sanitizedRows);
   }
 
   targetSheet.getRange(1, 1, 1, lastColumn)

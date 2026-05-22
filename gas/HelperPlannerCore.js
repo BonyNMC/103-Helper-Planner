@@ -120,6 +120,13 @@ function syncHelperPlannerMasterData() {
     throw new Error("Bạn không có quyền đồng bộ cơ sở dữ liệu! Vui lòng liên hệ Admin.");
   }
 
+  // Auto-update from external sources (Augmentir, Domo, Google sheet) to get latest raw data
+  try {
+    update();
+  } catch (updateErr) {
+    Logger.log("Auto-update from external sources skipped/failed: " + (updateErr.message || updateErr));
+  }
+
   // 1. Sync Planning input to HELPER_PLAN
   const planInputSheet = ss.getSheetByName('Planning input');
   if (!planInputSheet) {
@@ -315,6 +322,13 @@ function syncHelperPlannerMasterData() {
   const timestamp = new Date();
   const details = `Triggered full master database sync: Synced ${syncCount} plans, ${newBomRows.length} BOM master rows. By: ${activeUserEmail}.`;
   _writeToAuditLog(timestamp, activeUserEmail, 'DATABASE_SYNC', 'SYSTEM', 'SYNC', '', '', details);
+
+  // Auto-export fresh sheet snapshots to Drive so they can be viewed by the user/AI
+  try {
+    exportAiSheetSnapshots();
+  } catch (exportErr) {
+    Logger.log("Auto-export sheet snapshots skipped/failed: " + (exportErr.message || exportErr));
+  }
 
   return {
     success: true,
