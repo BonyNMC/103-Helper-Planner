@@ -1331,9 +1331,14 @@
               </h2>
               <p class="sub" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Gộp &amp; SUM toàn bộ mã P theo bộ lọc ca máy hiện tại.</p>
             </div>
-            <button class="summary-sort-btn" id="btnSortSummary" onclick="toggleSummarySort()" title="Nhấp để chuyển đổi kiểu sắp xếp">
-              📉 Giảm dần
-            </button>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button class="summary-sort-btn" id="btnSortSummary" onclick="toggleSummarySort()" title="Nhấp để chuyển đổi kiểu sắp xếp">
+                📉 Giảm dần
+              </button>
+              <button class="summary-sort-btn" id="btnCopyAllSummary" onclick="copyAllSummaryToClipboard(event)" style="border-color: rgba(16, 185, 129, 0.3); color: var(--success);" title="Sao chép toàn bộ mã P và số lượng">
+                📋 Copy tất cả
+              </button>
+            </div>
           </div>
           
           <div class="materials-list" id="consolidatedSummaryList" style="max-height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;">
@@ -1816,6 +1821,105 @@
       renderConsolidatedPCodeSummary();
     }
 
+    // Filter plans array for Summary card (ignores P-code tag filtering and material multiselect to avoid feedback loop)
+    function getFilteredPlansForSummary() {
+      return state.plans.filter(plan => {
+        if (state.filters.date && plan.date !== state.filters.date) return false;
+        if (state.filters.area && plan.area !== state.filters.area) return false;
+        if (state.filters.shift && plan.shift.toString() !== state.filters.shift) return false;
+        
+        // Machine (Lọc theo máy)
+        if (state.selectedMachines.length > 0 || state.filters.machine) {
+          let matchTags = true;
+          if (state.selectedMachines.length > 0) {
+            matchTags = plan.machine && state.selectedMachines.includes(plan.machine.toUpperCase().trim());
+          }
+          let matchTyped = true;
+          if (state.filters.machine) {
+            matchTyped = plan.machine && plan.machine.toLowerCase().includes(state.filters.machine);
+          }
+          if (!matchTags || !matchTyped) return false;
+        }
+        
+        // SKU Search (Lọc theo SKU)
+        if (state.selectedSKUs.length > 0 || state.filters.search) {
+          let matchTags = true;
+          if (state.selectedSKUs.length > 0) {
+            matchTags = plan.sku && state.selectedSKUs.includes(plan.sku.toUpperCase().trim());
+          }
+          let matchTyped = true;
+          if (state.filters.search) {
+            const matchSku = plan.sku && plan.sku.toLowerCase().includes(state.filters.search);
+            const matchDesc = plan.desc && plan.desc.toLowerCase().includes(state.filters.search);
+            matchTyped = matchSku || matchDesc;
+          }
+          if (!matchTags || !matchTyped) return false;
+        }
+        
+        return true;
+      });
+    }
+
+    // Copy toàn bộ danh sách tổng hợp mã P dưới dạng Tab-Separated Values (để paste vào Excel/SAP)
+    function copyAllSummaryToClipboard(e) {
+      if (e) e.stopPropagation();
+      const plans = getFilteredPlansForSummary();
+      if (plans.length === 0) {
+        showToast('Không có dữ liệu để copy!', 'error');
+        return;
+      }
+      
+      const pCodeSummary = {};
+      plans.forEach(plan => {
+        if (!plan.materials) return;
+        plan.materials.forEach(mat => {
+          const code = (mat.compCode || '').trim().toUpperCase();
+          if (code.startsWith('P')) {
+            if (!pCodeSummary[code]) {
+              pCodeSummary[code] = {
+                compCode: code,
+                totalQty: 0
+              };
+            }
+            pCodeSummary[code].totalQty += mat.requiredQty;
+          }
+        });
+      });
+      
+      const summaryArray = Object.values(pCodeSummary);
+      if (summaryArray.length === 0) {
+        showToast('Không tìm thấy vật tư bao bì để copy!', 'error');
+        return;
+      }
+      
+      if (state.summarySortMode === 'qty_desc') {
+        summaryArray.sort((a, b) => b.totalQty - a.totalQty);
+      } else {
+        summaryArray.sort((a, b) => a.compCode.localeCompare(b.compCode));
+      }
+      
+      const tsvText = summaryArray.map(item => `${item.compCode}\t${Math.round(item.totalQty)}`).join('\n');
+      
+      navigator.clipboard.writeText(tsvText).then(() => {
+        showToast(`Đã copy tất cả (${summaryArray.length} mã P) thành công!`, 'success');
+      }).catch(err => {
+        showToast('Lỗi khi copy vào clipboard: ' + err, 'error');
+      });
+    }
+
+    // Copy một dòng mã P đơn lẻ
+    function copySingleItemToClipboard(compCode, qty, e) {
+      if (e) e.stopPropagation();
+      const roundedQty = Math.round(qty);
+      const text = `${compCode}\t${roundedQty}`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`Đã copy ${compCode}: ${roundedQty.toLocaleString()}!`, 'success');
+      }).catch(err => {
+        showToast('Lỗi khi copy: ' + err, 'error');
+      });
+    }
+
     // Hàm gộp Group By & SUM dữ liệu mã P thời gian thực
     function renderConsolidatedPCodeSummary() {
       const container = document.getElementById('consolidatedSummaryList');
@@ -1823,8 +1927,8 @@
       
       container.innerHTML = '';
       
-      // Lấy danh sách kế hoạch đang khớp bộ lọc hiển thị trên lưới chính
-      const activePlans = getFilteredPlans();
+      // Lấy danh sách kế hoạch đã được lọc riêng cho Summary (bỏ qua filter P-code tags để tránh vòng lặp phản hồi)
+      const activePlans = getFilteredPlansForSummary();
       
       if (activePlans.length === 0) {
         container.innerHTML = `
@@ -1887,7 +1991,12 @@
               <span class="mat-code" style="font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--accent); font-size: 13.5px;">
                 ${item.compCode}
               </span>
-              <span class="mat-uom" style="font-size: 9px; padding: 2px 4px;">${item.uom}</span>
+              <div style="display: flex; gap: 4px; align-items: center;">
+                <span class="mat-uom" style="font-size: 9px; padding: 2px 4px;">${item.uom}</span>
+                <button onclick="copySingleItemToClipboard('${item.compCode}', ${item.totalQty}, event)" class="summary-sort-btn" style="padding: 2px 6px; font-size: 10px; border-color: rgba(99, 102, 241, 0.25); color: var(--primary);" title="Sao chép mã P và số lượng">
+                  📋 Copy
+                </button>
+              </div>
             </div>
             <div class="mat-desc" title="${item.compDesc}" style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
               ${item.compDesc}
