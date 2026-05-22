@@ -1331,15 +1331,9 @@
               </h2>
               <p class="sub" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Gộp &amp; SUM toàn bộ mã P theo bộ lọc ca máy hiện tại.</p>
             </div>
-            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 6px; align-items: center;">
               <button class="summary-sort-btn" id="btnSortSummary" onclick="toggleSummarySort()" title="Nhấp để chuyển đổi kiểu sắp xếp">
                 📉 Giảm dần
-              </button>
-              <button class="summary-sort-btn" id="btnCopyPCodes" onclick="copyPCodesToClipboard(event)" style="border-color: rgba(99, 102, 241, 0.3); color: var(--primary);" title="Sao chép danh sách mã P">
-                📋 Copy mã P
-              </button>
-              <button class="summary-sort-btn" id="btnCopyQuantities" onclick="copyQuantitiesToClipboard(event)" style="border-color: rgba(16, 185, 129, 0.3); color: var(--success);" title="Sao chép danh sách số lượng">
-                📊 Copy số lượng
               </button>
             </div>
           </div>
@@ -1863,130 +1857,13 @@
       });
     }
 
-    // Copy danh sách mã P (mỗi mã một dòng, sắp xếp đồng bộ)
-    function copyPCodesToClipboard(e) {
-      if (e) e.stopPropagation();
-      const plans = getFilteredPlansForSummary();
-      if (plans.length === 0) {
-        showToast('Không có dữ liệu để copy!', 'error');
-        return;
-      }
-      
-      const pCodeSummary = {};
-      plans.forEach(plan => {
-        if (!plan.materials) return;
-        plan.materials.forEach(mat => {
-          const code = (mat.compCode || '').trim().toUpperCase();
-          if (code.startsWith('P')) {
-            if (!pCodeSummary[code]) {
-              pCodeSummary[code] = {
-                compCode: code,
-                totalQty: 0
-              };
-            }
-            pCodeSummary[code].totalQty += mat.requiredQty;
-          }
-        });
-      });
-      
-      const summaryArray = Object.values(pCodeSummary);
-      if (summaryArray.length === 0) {
-        showToast('Không tìm thấy vật tư bao bì để copy!', 'error');
-        return;
-      }
-      
-      // Sắp xếp đồng bộ: Ưu tiên đưa các mã P đang được chọn làm filter lên đầu tiên (bubbling to top)
-      summaryArray.sort((a, b) => {
-        const aActive = state.selectedPCodes.includes(a.compCode) ? 1 : 0;
-        const bActive = state.selectedPCodes.includes(b.compCode) ? 1 : 0;
-        
-        if (aActive !== bActive) {
-          return bActive - aActive;
-        }
-        
-        if (state.summarySortMode === 'qty_desc') {
-          return b.totalQty - a.totalQty;
-        } else {
-          return a.compCode.localeCompare(b.compCode);
-        }
-      });
-      
-      const copyText = summaryArray.map(item => item.compCode).join('\n');
-      
-      navigator.clipboard.writeText(copyText).then(() => {
-        showToast(`Đã copy danh sách ${summaryArray.length} mã P!`, 'success');
-      }).catch(err => {
-        showToast('Lỗi khi copy mã P: ' + err, 'error');
-      });
-    }
-
-    // Copy danh sách số lượng của các mã P (mỗi số lượng một dòng, làm tròn, sắp xếp đồng bộ)
-    function copyQuantitiesToClipboard(e) {
-      if (e) e.stopPropagation();
-      const plans = getFilteredPlansForSummary();
-      if (plans.length === 0) {
-        showToast('Không có dữ liệu để copy!', 'error');
-        return;
-      }
-      
-      const pCodeSummary = {};
-      plans.forEach(plan => {
-        if (!plan.materials) return;
-        plan.materials.forEach(mat => {
-          const code = (mat.compCode || '').trim().toUpperCase();
-          if (code.startsWith('P')) {
-            if (!pCodeSummary[code]) {
-              pCodeSummary[code] = {
-                compCode: code,
-                totalQty: 0
-              };
-            }
-            pCodeSummary[code].totalQty += mat.requiredQty;
-          }
-        });
-      });
-      
-      const summaryArray = Object.values(pCodeSummary);
-      if (summaryArray.length === 0) {
-        showToast('Không tìm thấy vật tư bao bì để copy!', 'error');
-        return;
-      }
-      
-      // Sắp xếp đồng bộ chính xác với copyPCodesToClipboard để khi dán vào Excel/SAP khớp hàng
-      summaryArray.sort((a, b) => {
-        const aActive = state.selectedPCodes.includes(a.compCode) ? 1 : 0;
-        const bActive = state.selectedPCodes.includes(b.compCode) ? 1 : 0;
-        
-        if (aActive !== bActive) {
-          return bActive - aActive;
-        }
-        
-        if (state.summarySortMode === 'qty_desc') {
-          return b.totalQty - a.totalQty;
-        } else {
-          return a.compCode.localeCompare(b.compCode);
-        }
-      });
-      
-      const copyText = summaryArray.map(item => Math.round(item.totalQty)).join('\n');
-      
-      navigator.clipboard.writeText(copyText).then(() => {
-        showToast(`Đã copy danh sách ${summaryArray.length} số lượng tương ứng!`, 'success');
-      }).catch(err => {
-        showToast('Lỗi khi copy số lượng: ' + err, 'error');
-      });
-    }
-
-    // Copy một dòng mã P đơn lẻ
-    function copySingleItemToClipboard(compCode, qty, e) {
-      if (e) e.stopPropagation();
-      const roundedQty = Math.round(qty);
-      const text = `${compCode}\t${roundedQty}`;
-      
+    // Helper sao chép bất kỳ chuỗi văn bản nào vào Clipboard đi kèm thông báo Toast tiếng Việt
+    function copyTextToClipboard(text, successMsg, e) {
+      if (e) e.stopPropagation(); // Ngăn chặn nổi bọt sự kiện chọn lọc tag của thẻ cha
       navigator.clipboard.writeText(text).then(() => {
-        showToast(`Đã copy ${compCode}: ${roundedQty.toLocaleString()}!`, 'success');
+        showToast(successMsg, 'success');
       }).catch(err => {
-        showToast('Lỗi khi copy: ' + err, 'error');
+        showToast('Lỗi khi sao chép: ' + err, 'error');
       });
     }
 
@@ -2065,25 +1942,20 @@
         const highlightClass = isTagActive ? 'p-cell-highlight' : '';
         
         return `
-          <div class="material-card ${highlightClass}" style="cursor: pointer; padding: 10px; border-radius: 8px; position: relative;" onclick="togglePCodeTag('${item.compCode}', event)" title="Nhấp để lọc nhanh máy cần cấp mã ${item.compCode}">
+          <div class="material-card ${highlightClass}" style="cursor: pointer; padding: 10px; border-radius: 8px; position: relative;" onclick="togglePCodeTag('${item.compCode}', event)" title="Nhấp vào khoảng trống để bật/tắt lọc nhanh máy cần cấp mã ${item.compCode}">
             <div class="mat-header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="mat-code" style="font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--accent); font-size: 13.5px;">
-                ${item.compCode}
+              <span class="mat-code" onclick="copyTextToClipboard('${item.compCode}', 'Đã copy mã: ${item.compCode}!', event)" style="font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--accent); font-size: 13.5px; cursor: pointer; padding: 3px 8px; border-radius: 6px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); display: inline-flex; align-items: center; gap: 4px; transition: var(--transition-smooth);" onmouseover="this.style.background='rgba(245, 158, 11, 0.15)'; this.style.borderColor='var(--accent)'" onmouseout="this.style.background='rgba(245, 158, 11, 0.08)'; this.style.borderColor='rgba(245, 158, 11, 0.25)'" title="Nhấp vào đây để sao chép riêng mã P này: ${item.compCode}">
+                ${item.compCode} <span style="font-size: 10px; opacity: 0.85;">📋</span>
               </span>
-              <div style="display: flex; gap: 4px; align-items: center;">
-                <span class="mat-uom" style="font-size: 9px; padding: 2px 4px;">${item.uom}</span>
-                <button onclick="copySingleItemToClipboard('${item.compCode}', ${item.totalQty}, event)" class="summary-sort-btn" style="padding: 2px 6px; font-size: 10px; border-color: rgba(99, 102, 241, 0.25); color: var(--primary);" title="Sao chép mã P và số lượng">
-                  📋 Copy
-                </button>
-              </div>
+              <span class="mat-uom" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; background: var(--mat-uom-bg); color: var(--mat-uom-text); border: 1px solid var(--glass-border);">${item.uom}</span>
             </div>
-            <div class="mat-desc" title="${item.compDesc}" style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
+            <div class="mat-desc" title="${item.compDesc}" style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">
               ${item.compDesc}
             </div>
-            <div class="mat-calc" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 10.5px; color: var(--text-dark);">Tổng lãnh:</span>
-              <span class="mat-qty" style="font-size: 15px; color: var(--success); font-weight: 700;">
-                ${item.totalQty.toLocaleString(undefined, {maximumFractionDigits: 0})}
+            <div class="mat-calc" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; color: var(--text-dark); font-weight: 500;">Tổng số lượng lãnh:</span>
+              <span class="mat-qty" onclick="copyTextToClipboard('${Math.round(item.totalQty)}', 'Đã copy số lượng: ${Math.round(item.totalQty).toLocaleString()}!', event)" style="font-size: 15px; color: var(--success); font-weight: 700; cursor: pointer; padding: 3px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); display: inline-flex; align-items: center; gap: 5px; transition: var(--transition-smooth);" onmouseover="this.style.background='rgba(16, 185, 129, 0.15)'; this.style.borderColor='var(--success)'" onmouseout="this.style.background='rgba(16, 185, 129, 0.08)'; this.style.borderColor='rgba(16, 185, 129, 0.25)'" title="Nhấp vào đây để sao chép riêng số lượng này: ${Math.round(item.totalQty).toLocaleString()}">
+                ${item.totalQty.toLocaleString(undefined, {maximumFractionDigits: 0})} <span style="font-size: 11px; opacity: 0.85;">📋</span>
               </span>
             </div>
           </div>
