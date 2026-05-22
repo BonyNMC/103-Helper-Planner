@@ -1331,12 +1331,15 @@
               </h2>
               <p class="sub" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Gộp &amp; SUM toàn bộ mã P theo bộ lọc ca máy hiện tại.</p>
             </div>
-            <div style="display: flex; gap: 6px; align-items: center;">
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
               <button class="summary-sort-btn" id="btnSortSummary" onclick="toggleSummarySort()" title="Nhấp để chuyển đổi kiểu sắp xếp">
                 📉 Giảm dần
               </button>
-              <button class="summary-sort-btn" id="btnCopyAllSummary" onclick="copyAllSummaryToClipboard(event)" style="border-color: rgba(16, 185, 129, 0.3); color: var(--success);" title="Sao chép toàn bộ mã P và số lượng">
-                📋 Copy tất cả
+              <button class="summary-sort-btn" id="btnCopyPCodes" onclick="copyPCodesToClipboard(event)" style="border-color: rgba(99, 102, 241, 0.3); color: var(--primary);" title="Sao chép danh sách mã P">
+                📋 Copy mã P
+              </button>
+              <button class="summary-sort-btn" id="btnCopyQuantities" onclick="copyQuantitiesToClipboard(event)" style="border-color: rgba(16, 185, 129, 0.3); color: var(--success);" title="Sao chép danh sách số lượng">
+                📊 Copy số lượng
               </button>
             </div>
           </div>
@@ -1860,8 +1863,8 @@
       });
     }
 
-    // Copy toàn bộ danh sách tổng hợp mã P dưới dạng Tab-Separated Values (để paste vào Excel/SAP)
-    function copyAllSummaryToClipboard(e) {
+    // Copy danh sách mã P (mỗi mã một dòng, sắp xếp đồng bộ)
+    function copyPCodesToClipboard(e) {
       if (e) e.stopPropagation();
       const plans = getFilteredPlansForSummary();
       if (plans.length === 0) {
@@ -1892,18 +1895,85 @@
         return;
       }
       
-      if (state.summarySortMode === 'qty_desc') {
-        summaryArray.sort((a, b) => b.totalQty - a.totalQty);
-      } else {
-        summaryArray.sort((a, b) => a.compCode.localeCompare(b.compCode));
+      // Sắp xếp đồng bộ: Ưu tiên đưa các mã P đang được chọn làm filter lên đầu tiên (bubbling to top)
+      summaryArray.sort((a, b) => {
+        const aActive = state.selectedPCodes.includes(a.compCode) ? 1 : 0;
+        const bActive = state.selectedPCodes.includes(b.compCode) ? 1 : 0;
+        
+        if (aActive !== bActive) {
+          return bActive - aActive;
+        }
+        
+        if (state.summarySortMode === 'qty_desc') {
+          return b.totalQty - a.totalQty;
+        } else {
+          return a.compCode.localeCompare(b.compCode);
+        }
+      });
+      
+      const copyText = summaryArray.map(item => item.compCode).join('\n');
+      
+      navigator.clipboard.writeText(copyText).then(() => {
+        showToast(`Đã copy danh sách ${summaryArray.length} mã P!`, 'success');
+      }).catch(err => {
+        showToast('Lỗi khi copy mã P: ' + err, 'error');
+      });
+    }
+
+    // Copy danh sách số lượng của các mã P (mỗi số lượng một dòng, làm tròn, sắp xếp đồng bộ)
+    function copyQuantitiesToClipboard(e) {
+      if (e) e.stopPropagation();
+      const plans = getFilteredPlansForSummary();
+      if (plans.length === 0) {
+        showToast('Không có dữ liệu để copy!', 'error');
+        return;
       }
       
-      const tsvText = summaryArray.map(item => `${item.compCode}\t${Math.round(item.totalQty)}`).join('\n');
+      const pCodeSummary = {};
+      plans.forEach(plan => {
+        if (!plan.materials) return;
+        plan.materials.forEach(mat => {
+          const code = (mat.compCode || '').trim().toUpperCase();
+          if (code.startsWith('P')) {
+            if (!pCodeSummary[code]) {
+              pCodeSummary[code] = {
+                compCode: code,
+                totalQty: 0
+              };
+            }
+            pCodeSummary[code].totalQty += mat.requiredQty;
+          }
+        });
+      });
       
-      navigator.clipboard.writeText(tsvText).then(() => {
-        showToast(`Đã copy tất cả (${summaryArray.length} mã P) thành công!`, 'success');
+      const summaryArray = Object.values(pCodeSummary);
+      if (summaryArray.length === 0) {
+        showToast('Không tìm thấy vật tư bao bì để copy!', 'error');
+        return;
+      }
+      
+      // Sắp xếp đồng bộ chính xác với copyPCodesToClipboard để khi dán vào Excel/SAP khớp hàng
+      summaryArray.sort((a, b) => {
+        const aActive = state.selectedPCodes.includes(a.compCode) ? 1 : 0;
+        const bActive = state.selectedPCodes.includes(b.compCode) ? 1 : 0;
+        
+        if (aActive !== bActive) {
+          return bActive - aActive;
+        }
+        
+        if (state.summarySortMode === 'qty_desc') {
+          return b.totalQty - a.totalQty;
+        } else {
+          return a.compCode.localeCompare(b.compCode);
+        }
+      });
+      
+      const copyText = summaryArray.map(item => Math.round(item.totalQty)).join('\n');
+      
+      navigator.clipboard.writeText(copyText).then(() => {
+        showToast(`Đã copy danh sách ${summaryArray.length} số lượng tương ứng!`, 'success');
       }).catch(err => {
-        showToast('Lỗi khi copy vào clipboard: ' + err, 'error');
+        showToast('Lỗi khi copy số lượng: ' + err, 'error');
       });
     }
 
@@ -1973,12 +2043,21 @@
         return;
       }
       
-      // Áp dụng thuật toán sắp xếp theo tùy chọn của người dùng
-      if (state.summarySortMode === 'qty_desc') {
-        summaryArray.sort((a, b) => b.totalQty - a.totalQty);
-      } else {
-        summaryArray.sort((a, b) => a.compCode.localeCompare(b.compCode));
-      }
+      // Sắp xếp: Ưu tiên đưa các mã P đang được chọn làm filter lên đầu tiên (bubbling to top)
+      summaryArray.sort((a, b) => {
+        const aActive = state.selectedPCodes.includes(a.compCode) ? 1 : 0;
+        const bActive = state.selectedPCodes.includes(b.compCode) ? 1 : 0;
+        
+        if (aActive !== bActive) {
+          return bActive - aActive; // Bubble active ones to the top
+        }
+        
+        if (state.summarySortMode === 'qty_desc') {
+          return b.totalQty - a.totalQty;
+        } else {
+          return a.compCode.localeCompare(b.compCode);
+        }
+      });
       
       // Kết xuất HTML danh sách các thẻ vật tư tổng hợp
       container.innerHTML = summaryArray.map(item => {
