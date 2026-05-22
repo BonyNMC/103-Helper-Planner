@@ -1141,6 +1141,36 @@
         color: black !important;
       }
     }
+
+    /* Styling cho Panel Tổng Hợp Mã P Consolidated */
+    .summary-sort-btn {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition-smooth);
+    }
+    .summary-sort-btn:hover {
+      background: var(--glass-bg-hover);
+      color: var(--text-main);
+      border-color: var(--primary);
+    }
+    .summary-item-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--primary-glow);
+      color: var(--primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -1292,7 +1322,24 @@
           </div>
         </div>
         
-
+        <!-- Drawer Card 2: Consolidated P-Code Summary (Group By & SUM) -->
+        <div class="glass-panel" id="consolidatedSummaryPanel" style="width: 100%; display: flex; flex-direction: column; gap: 14px;">
+          <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 0;">
+            <div>
+              <h2 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                <span>📊</span> Tổng Hợp Lãnh Mã P
+              </h2>
+              <p class="sub" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Gộp &amp; SUM toàn bộ mã P theo bộ lọc ca máy hiện tại.</p>
+            </div>
+            <button class="summary-sort-btn" id="btnSortSummary" onclick="toggleSummarySort()" title="Nhấp để chuyển đổi kiểu sắp xếp">
+              📉 Giảm dần
+            </button>
+          </div>
+          
+          <div class="materials-list" id="consolidatedSummaryList" style="max-height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
         
       </div>
       
@@ -1591,6 +1638,7 @@
       selectedSKUs: [], // Holds array of active selected SKU filter tags
       hasBomAdjustPrivilege: false, // Permission check result
       userEmail: '', // Active session email
+      summarySortMode: 'qty_desc', // Hỗ trợ 'qty_desc' và 'code_asc'
       filters: {
         date: '',
         area: '',
@@ -1753,6 +1801,108 @@
       }
     }
 
+    // Hàm thay đổi trạng thái sắp xếp của panel tổng hợp mã P
+    function toggleSummarySort() {
+      const btn = document.getElementById('btnSortSummary');
+      if (state.summarySortMode === 'qty_desc') {
+        state.summarySortMode = 'code_asc';
+        if (btn) btn.innerHTML = '🔤 Theo mã P';
+        showToast('Sắp xếp theo thứ tự mã P!', 'info');
+      } else {
+        state.summarySortMode = 'qty_desc';
+        if (btn) btn.innerHTML = '📉 Giảm dần';
+        showToast('Sắp xếp theo số lượng giảm dần!', 'info');
+      }
+      renderConsolidatedPCodeSummary();
+    }
+
+    // Hàm gộp Group By & SUM dữ liệu mã P thời gian thực
+    function renderConsolidatedPCodeSummary() {
+      const container = document.getElementById('consolidatedSummaryList');
+      if (!container) return;
+      
+      container.innerHTML = '';
+      
+      // Lấy danh sách kế hoạch đang khớp bộ lọc hiển thị trên lưới chính
+      const activePlans = getFilteredPlans();
+      
+      if (activePlans.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="padding: 20px;">
+            <div class="empty-icon">📊</div>
+            <p style="font-size: 12px; font-weight: 500;">Không có dữ liệu kế hoạch phù hợp</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const pCodeSummary = {}; // Map lưu trữ: compCode -> { compCode, compDesc, uom, totalQty }
+      
+      activePlans.forEach(plan => {
+        if (!plan.materials) return;
+        plan.materials.forEach(mat => {
+          const code = (mat.compCode || '').trim().toUpperCase();
+          // Chỉ gộp các nguyên vật liệu bao bì đóng gói bắt đầu bằng mã P
+          if (code.startsWith('P')) {
+            if (!pCodeSummary[code]) {
+              pCodeSummary[code] = {
+                compCode: code,
+                compDesc: mat.compDesc || mat.compName || 'N/A',
+                uom: mat.uom || '',
+                totalQty: 0
+              };
+            }
+            pCodeSummary[code].totalQty += mat.requiredQty;
+          }
+        });
+      });
+      
+      const summaryArray = Object.values(pCodeSummary);
+      
+      if (summaryArray.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="padding: 20px;">
+            <div class="empty-icon">⚠️</div>
+            <p style="font-size: 12px; font-weight: 500;">Không tìm thấy vật tư bao bì (đầu "P") nào</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Áp dụng thuật toán sắp xếp theo tùy chọn của người dùng
+      if (state.summarySortMode === 'qty_desc') {
+        summaryArray.sort((a, b) => b.totalQty - a.totalQty);
+      } else {
+        summaryArray.sort((a, b) => a.compCode.localeCompare(b.compCode));
+      }
+      
+      // Kết xuất HTML danh sách các thẻ vật tư tổng hợp
+      container.innerHTML = summaryArray.map(item => {
+        const isTagActive = state.selectedPCodes.includes(item.compCode);
+        const highlightClass = isTagActive ? 'p-cell-highlight' : '';
+        
+        return `
+          <div class="material-card ${highlightClass}" style="cursor: pointer; padding: 10px; border-radius: 8px; position: relative;" onclick="togglePCodeTag('${item.compCode}', event)" title="Nhấp để lọc nhanh máy cần cấp mã ${item.compCode}">
+            <div class="mat-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="mat-code" style="font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--accent); font-size: 13.5px;">
+                ${item.compCode}
+              </span>
+              <span class="mat-uom" style="font-size: 9px; padding: 2px 4px;">${item.uom}</span>
+            </div>
+            <div class="mat-desc" title="${item.compDesc}" style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
+              ${item.compDesc}
+            </div>
+            <div class="mat-calc" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 10.5px; color: var(--text-dark);">Tổng lãnh:</span>
+              <span class="mat-qty" style="font-size: 15px; color: var(--success); font-weight: 700;">
+                ${item.totalQty.toLocaleString(undefined, {maximumFractionDigits: 0})}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     // Render KPI Metrics Cards
     function renderKPIs(filteredPlans) {
       let pkgTotal = 0;
@@ -1793,6 +1943,11 @@
       state.selectedPCodes = [];
       state.selectedMachines = [];
       state.selectedSKUs = [];
+      
+      // Reset Consolidated Summary Sort Mode
+      state.summarySortMode = 'qty_desc';
+      const btn = document.getElementById('btnSortSummary');
+      if (btn) btn.innerHTML = '📉 Giảm dần';
       
       renderPCodeTags();
       renderMachineTags();
@@ -2427,6 +2582,9 @@
     function renderPlansGrid() {
       const filteredPlans = getFilteredPlans();
       renderKPIs(filteredPlans);
+      
+      // Render Consolidated P-Code Summary Group By Card
+      renderConsolidatedPCodeSummary();
       
       // Render Dispatch Hub options and allocation table!
       renderDispatchHub(state.filteredPlansBeforeMaterialFilter || []);
